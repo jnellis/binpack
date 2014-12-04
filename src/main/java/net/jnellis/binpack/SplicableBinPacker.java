@@ -3,6 +3,7 @@ package net.jnellis.binpack;
 import net.jnellis.binpack.packing.PackingPolicy;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -18,19 +19,19 @@ public class SplicableBinPacker extends BinPacker<Double> {
 
 
   @Override
-  public BinPacker setPackingPolicy(PackingPolicy<Double> packingPolicy) {
-    this.packingPolicy = packingPolicy;
-    return this; // chainable
+  public BinPacker<Double> setPackingPolicy(PackingPolicy<Double> packingPolicy) {
+    this.packingPolicy = Optional.of(packingPolicy);
+    return null;
   }
 
   @Override
   public Stream<Bin<Double>> pack(Stream<Double> pieces,
-                                  Stream<Double> availableCapacities,
-                                  Stream<Double> existingCapacities) {
+                                  Stream<Bin<Double>> existingBins,
+                                  Stream<Double> availableCapacities) {
 
     return super.pack(createSplicePieces(pieces, availableCapacities),
-        availableCapacities,
-        existingCapacities);
+        existingBins,
+        availableCapacities);
   }
 
   /**
@@ -64,7 +65,7 @@ public class SplicableBinPacker extends BinPacker<Double> {
    */
   public Stream<Double> createSplicePieces(Stream<Double> pieces,
                                            Stream<Double> capacities) {
-
+    //@todo: remove stream assignments. yo more flo
     Stream<Double> stream = pieces;
     OptionalDouble maxAvailableCapacity = capacities.mapToDouble(i -> i).max();
 
@@ -88,7 +89,7 @@ public class SplicableBinPacker extends BinPacker<Double> {
           }
       ).boxed();
     }
-    return stream;
+    return pieces;
   }
 
 

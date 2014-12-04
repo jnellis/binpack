@@ -10,10 +10,7 @@
 package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
-import net.jnellis.binpack.LinearBin;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -21,19 +18,21 @@ import java.util.stream.Stream;
  *
  * @author Joe Nellis
  */
-public class CustomFitPackingPolicy    extends LinearPackingPolicy  {
-
+public class CustomFitPackingPolicy    implements LinearPackingPolicy  {
   @Override
-  public Stream<LinearBin> pack(Stream<Double> pieces, List<LinearBin> bins,Stream<Double> capacity) {
-    boolean toggle = false;
-    for (int i = 0; i < pieces.size(); i++) {
-      double piece = pieces.get(i);
-      LinkedList<Double> onePiece = new LinkedList<>();
-      onePiece.add(piece);
-      FirstFitPackingPolicy<T> firstFitPackingPolicy = (FirstFitPackingPolicy<T>)this;
-      firstFitPackingPolicy.pack(onePiece,bins,capacity);
-      toggle ^= true; //xor with true
-    }
+  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
+      existingBins, Stream<Double> availableCapacities) {
+    return null;
+//
+//    boolean toggle = false;
+//    for (int i = 0; i < pieces.size(); i++) {
+//      double piece = pieces.get(i);
+//      LinkedList<Double> onePiece = new LinkedList<>();
+//      onePiece.add(piece);
+//      FirstFitPackingPolicy<T> firstFitPackingPolicy = (FirstFitPackingPolicy<T>)this;
+//      firstFitPackingPolicy.pack(onePiece,bins,capacity);
+//      toggle ^= true; //xor with true
+//    }
   }
 
 }

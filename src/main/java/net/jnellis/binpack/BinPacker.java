@@ -10,65 +10,68 @@
 package net.jnellis.binpack;
 
 import net.jnellis.binpack.packing.PackingPolicy;
-import net.jnellis.binpack.preorder.DescendingPolicy;
+import net.jnellis.binpack.preorder.AsIsPolicy;
 import net.jnellis.binpack.preorder.PreOrderPolicy;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
  * @author Joe Nellis
  */
-abstract public class BinPacker<T extends Comparable<T>> {
+abstract public class BinPacker<T extends Comparable<T>>
+    implements PackingPolicy<T> {
 
   /**
    * The ordering imposed upon the inputs (i.e. ascending, descending, etc,)
    */
-  PreOrderPolicy<T> preOrderPolicy;
+  private Optional<PreOrderPolicy<T>> preOrderPolicy = Optional.empty();
 
   /**
    * The packing algorithm to use.
    */
-  PackingPolicy<T> packingPolicy;
+  protected Optional<PackingPolicy<T>> packingPolicy = Optional.empty();
 
   /**
    * Fixed bin sizes that need to be filled first need an ordering policy also.
    */
-  PreOrderPolicy<T> existingMaterialPreOrderPolicy;
+  private Optional<PreOrderPolicy<Bin<T>>>
+      existingMaterialPreOrderPolicy = Optional.empty();
 
   /**
    * An ordering policy for available bin sizes (not existing bins) for when
    * a piece needs a new bin.
    */
-  PreOrderPolicy<T> availableMaterialPreOrderPolicy;
+  private Optional<PreOrderPolicy<T>>
+      availableMaterialPreOrderPolicy = Optional.empty();
 
-  public BinPacker setPreOrderPolicy(PreOrderPolicy<T>
-                                         preOrderPolicy) {
-    this.preOrderPolicy = preOrderPolicy;
+  public BinPacker<T> setPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
+    this.preOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
 
-  abstract public BinPacker setPackingPolicy(PackingPolicy<T> packingPolicy);
 
-  public BinPacker setExistingMaterialPreOrderPolicy(
-      PreOrderPolicy<T> existingMaterialPreOrderPolicy
-  ) {
-    this.existingMaterialPreOrderPolicy = existingMaterialPreOrderPolicy;
+  public BinPacker<T>
+  setExistingMaterialPreOrderPolicy(PreOrderPolicy<Bin<T>> preOrderPolicy) {
+    this.existingMaterialPreOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
 
-  public BinPacker setAvailableMaterialPreOrderPolicy(
-      PreOrderPolicy<T> availableMaterialPreOrderPolicy
-  ) {
-    this.availableMaterialPreOrderPolicy = availableMaterialPreOrderPolicy;
+  public BinPacker<T>
+  setAvailableMaterialPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
+    this.availableMaterialPreOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
+
+  abstract public BinPacker<T> setPackingPolicy(PackingPolicy<T> packingPolicy);
 
   public BinPacker() {
     // some defaults
-    this.preOrderPolicy = new DescendingPolicy<T>();
+    this.preOrderPolicy = Optional.of(new AsIsPolicy<>());
+    this.existingMaterialPreOrderPolicy = Optional.of(new AsIsPolicy<>());
+    this.availableMaterialPreOrderPolicy = Optional.of(new AsIsPolicy<>());
     //this.packingPolicy = new BestFitPackingPolicy<>();
-    this.existingMaterialPreOrderPolicy = new DescendingPolicy<T>();
-    this.availableMaterialPreOrderPolicy = new DescendingPolicy<T>();
   }
 
   /**
@@ -76,26 +79,34 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * with <i>existingMaterial</i>. When a new bin is required, one is copied
    * from the <i>availableMaterial</i> set according to the
    * <i>availableMaterialPreOrderPolicy</i>.
-   * <p>
-   * <code>allowSplices</code> being true will cause
-   * some pre-processing of the pieces. It will replace any piece longer than
-   * the maximum available capacity is divided into maximum capacity sized
-   * pieces with a remainder piece.
    *
    * @param pieces              List of pieces to be packed.
    * @param availableCapacities An array of bin capacities we can make when we
    *                            need another bin.
-   * @param existingCapacities  The initial set of bins will be made with these
+   * @param existingBins  The initial set of bins will be made with these
    *                            capacities.
    */
   public Stream<Bin<T>> pack(Stream<T> pieces,
-                             Stream<T> availableCapacities,
-                             Stream<T> existingCapacities) {
+                             Stream<Bin<T>> existingBins,
+                             Stream<T> availableCapacities) {
 
-    availableMaterialPreOrderPolicy.order(availableCapacities);
-    existingMaterialPreOrderPolicy.order(existingCapacities);
-    preOrderPolicy.order(pieces);
-    return packingPolicy.pack(pieces, availableCapacities, existingCapacities);
+    if (availableMaterialPreOrderPolicy.isPresent()) {
+      availableMaterialPreOrderPolicy.get().order(availableCapacities);
+    }
+    if (existingMaterialPreOrderPolicy.isPresent()) {
+      existingMaterialPreOrderPolicy.get().order(existingBins);
+    }
+    if (preOrderPolicy.isPresent()) {
+      preOrderPolicy.get().order(pieces);
+    }
+    if (packingPolicy.isPresent()) {
+      return packingPolicy.get().pack(pieces, existingBins,
+          availableCapacities);
+    } else {
+      throw new NoSuchElementException("No PackingPolicy found for " +
+          this.getClass().getName() + ".  Use this.setPackingPolicy()");
+    }
   }
+
 
 }

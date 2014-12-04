@@ -11,32 +11,31 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.List;
-import java.util.ListIterator;
+import java.util.stream.Stream;
 
 /**
  * Places pieces in the farthest bin first.
  *
  * @author Joe Nellis
  */
-public interface LastFitPackingPolicy<T extends Comparable<T> >
-    extends LinearPackingPolicy<T> {
-
+public class LastFitPackingPolicy implements LinearPackingPolicy  {
 
   @Override
-  default void pack(List<T> pieces, List<Bin<T>> bins, T capacity) {
-    pieces.forEach(piece -> {
-      ListIterator<Bin<T>> iterator = bins.listIterator();
-      while (iterator.hasPrevious()) {
-        Bin<T> lastAvailableBin = iterator.previous();
-        if (lastAvailableBin.canFit(piece)) {
-          place(piece, lastAvailableBin);
-          return; // leave early
-        }
-      }
-      // no existing bins has space.
-      Bin<T> newBin = createNewBin(bins, capacity);
-      place(piece, newBin);
-    });
+  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
+      existingBins, Stream<Double> availableCapacities) {
+    return null;
+//    pieces.forEach(piece -> {
+//      ListIterator<Bin<T>> iterator = bins.listIterator();
+//      while (iterator.hasPrevious()) {
+//        Bin<T> lastAvailableBin = iterator.previous();
+//        if (lastAvailableBin.canFit(piece)) {
+//          place(piece, lastAvailableBin);
+//          return; // leave early
+//        }
+//      }
+//      // no existing bins has space.
+//      Bin<T> newBin = createNewBin(bins, capacity);
+//      place(piece, newBin);
+//    });
   }
 }

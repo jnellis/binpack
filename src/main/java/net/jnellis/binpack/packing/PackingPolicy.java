@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * @author Joe Nellis
  */
 @FunctionalInterface
-public interface PackingPolicy<T> {
+public interface PackingPolicy<T extends Comparable<T>> {
 
   /**
    * Attempts to place <code>pieces</code> into bins of <code>existing</code>
@@ -28,12 +28,12 @@ public interface PackingPolicy<T> {
    * fill a new bin.
    *
    * @param pieces              The pieces that need to be packed.
-   * @param existingCapacities  Existing bin sizes that pieces will be packed
+   * @param existingBins        Existing bins that pieces will be packed
    *                            into first.
    * @param availableCapacities Available bin sizes that we can create.
    * @return Returns a stream of packed bins.
    */
   public Stream<Bin<T>> pack(Stream<T> pieces,
-                             Stream<T> existingCapacities,
-                             Stream<T> availableCapacities);
+                                     Stream<Bin<T>> existingBins,
+                                     Stream<T> availableCapacities);
 }

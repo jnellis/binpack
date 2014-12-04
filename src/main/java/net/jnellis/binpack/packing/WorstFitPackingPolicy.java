@@ -10,33 +10,29 @@
 package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
-import net.jnellis.binpack.BinImpl;
-import net.jnellis.binpack.LinearBin;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Places pieces into the emptiest bin first.
  *
  * @author Joe Nellis
  */
-public interface WorstFitPackingPolicy<T extends Comparable<T> >
-    extends LinearPackingPolicy<T> {
-
+public class WorstFitPackingPolicy implements LinearPackingPolicy {
   @Override
-  default void pack(List<T> pieces,
-                    List<Bin<T>> bins,
-                    T capacity) {
+  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
+      existingBins, Stream<Double> availableCapacities) {
+    return null;
 
-    pieces.forEach(piece -> {
-      LinearBin<T> emptiest = new BinImpl<T>(capacity);
-      // find the emptiest bin or create a new one.
-      emptiest = bins.stream().min(emptiest::compare)
-          .orElse(createNewBin(bins, capacity));
-
-      assert emptiest.canFit(piece);
-      place(piece, emptiest);
-    });
+//    pieces.forEach(piece -> {
+//      LinearBin<T> emptiest = new BinImpl<T>(capacity);
+//      // find the emptiest bin or create a new one.
+//      emptiest = bins.stream().min(emptiest::compare)
+//          .orElse(createNewBin(bins, capacity));
+//
+//      assert emptiest.canFit(piece);
+//      place(piece, emptiest);
+//    });
   }
 
 

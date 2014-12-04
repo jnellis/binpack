@@ -9,9 +9,13 @@
 
 package net.jnellis.binpack;
 
+
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 
 /**
  * A bin for storing Double values.
@@ -21,29 +25,31 @@ import java.util.List;
 public class LinearBin implements Bin<Double> {
 
   private List<Double> pieces = new ArrayList<>();
-  private double total = 0.0;
   private final List<Double> capacities;
+
   /**
    * Flag indicating whether this bin was an existing bin.
    */
   private final boolean existing;
 
-  public LinearBin(List<Double> capacities){
+  public LinearBin(@NotNull List<Double> capacities) {
     this.capacities = capacities;
     this.existing = false;
   }
-  public LinearBin(List<Double> capacities, boolean existing) {
+
+  public LinearBin(@NotNull List<Double> capacities, boolean existing) {
     this.capacities = capacities;
     this.existing = existing;
   }
 
   @Override
   public boolean add(Double piece) {
-    if (!pieces.add(piece)) {
+    synchronized (pieces) {
+      if (this.canFit(piece)) {
+        return pieces.add(piece);
+      }
       return false;
     }
-    total = total + piece;
-    return true;
   }
 
   /**
@@ -55,29 +61,43 @@ public class LinearBin implements Bin<Double> {
    */
   @Override
   public boolean canFit(Double piece) {
-    double newTotal = getTotal() + piece;
-    return
-        getCapacities().stream().anyMatch(capacity -> capacity > newTotal);
+      Double newTotal = getTotal() + piece;
+      return capacities.parallelStream()
+          .anyMatch(capacity -> capacity >= newTotal);
   }
 
   @Override
-  public boolean isExisting() {
+  public final boolean isExisting() {
     return existing;
   }
 
   @Override
-  public Double getTotal() {
-    return total;
-  }
+  public final Double getTotal() {
+    return pieces.parallelStream().reduce(Double::sum).orElse(0.0);
+  }                                                          //|\\  mr mustache
 
   @Override
-  public List<Double> getCapacities() {
+  public final List<Double> getCapacities() {
     return Collections.unmodifiableList(capacities);
   }
 
   @Override
-  public List<Double> getPieces() {
+  public final List<Double> getPieces() {
     return Collections.unmodifiableList(pieces);
   }
 
+  public static double getMaxRemainingCapacity(Bin<Double> bin) {
+    double maxCapacity = bin.getCapacities().parallelStream()
+        .reduce(Double::max).orElse(0.0);
+                                   //|\\  strikes again
+    return maxCapacity - bin.getTotal();
+  }
+
+  @Override
+  public int compareTo(@NotNull Bin<Double> otherBin) {
+
+    return Double.compare(getMaxRemainingCapacity(this),
+        getMaxRemainingCapacity(otherBin));
+
+  }
 }

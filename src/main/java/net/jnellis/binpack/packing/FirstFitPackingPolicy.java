@@ -11,28 +11,45 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Places pieces in the closest bin first.
  * @author Joe Nellis
  */
-public interface FirstFitPackingPolicy<T extends Comparable<T> >
-    extends LinearPackingPolicy<T> {
+public class FirstFitPackingPolicy implements LinearPackingPolicy {
 
+  /**
+   * Attempts to place <code>pieces</code> into bins of <code>existing</code>
+   * sizes first then uses <code>available</code> bin sizes when it needs to
+   * fill a new bin.
+   *
+   * @param pieces              The pieces that need to be packed.
+   * @param existingBins        Existing bins that pieces will be packed
+   *                            into first.
+   * @param availableCapacities Available bin sizes that we can create.
+   * @return Returns a stream of packed bins.
+   */
   @Override
-  default public void pack(List<T> pieces, List<Bin<T>> bins, T capacity) {
+  public Stream<Bin<Double>> pack(Stream<Double> pieces,
+                                  Stream<Bin<Double>> existingBins,
+                                  Stream<Double> availableCapacities) {
+
+
     // first fit - place a new piece in the leftmost bin that still has room.
-
     pieces.forEach(piece -> {
-      Bin<T> firstAvailableBin = bins.stream()
+      Optional<Bin<Double>> firstAvailableBin = existingBins
           .filter(bin -> bin.canFit(piece))
-          .findFirst()
-          .orElse(createNewBin(bins, capacity));
+          .findFirst();
+         // .orElse(createNewBin(existingBins, availableCapacities).);
 
-      assert firstAvailableBin.canFit(piece);
-      place(piece, firstAvailableBin);
+      assert firstAvailableBin.get().canFit(piece);
+
+      place(piece, firstAvailableBin.get());
     });
+
+    return existingBins;
   }
 
 

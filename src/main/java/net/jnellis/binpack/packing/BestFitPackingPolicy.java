@@ -10,7 +10,6 @@
 package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
-import net.jnellis.binpack.LinearBin;
 
 import java.util.stream.Stream;
 
@@ -22,17 +21,18 @@ public class BestFitPackingPolicy implements LinearPackingPolicy {
 
 
   @Override
-  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Double>
-      existingCapacities, Stream<Double> availableCapacities) {
+  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
+      existingBins, Stream<Double> availableCapacities) {
+    return null;
 
 
-
-    pieces.forEach(piece->{
-       LinearBin fullestFittableBin = bins.stream().filter(bin-> bin.canFit(piece))
-          .sorted()
-          .findFirst()
-          .orElse(createNewBin(bins,capacity));
-      place(piece,fullestFittableBin);
-    });
+//
+//    pieces.forEach(piece->{
+//       LinearBin fullestFittableBin = bins.stream().filter(bin-> bin.canFit(piece))
+//          .sorted()
+//          .findFirst()
+//          .orElse(createNewBin(bins,capacity));
+//      place(piece,fullestFittableBin);
+//    });
   }
 }

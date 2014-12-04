@@ -7,8 +7,8 @@ import java.util.List;
  * Date: 12/1/2014
  * Time: 11:37 AM
  */
-public interface Bin<T> {
-  boolean add(T d);
+public interface Bin<T> extends Comparable<Bin<T>> {
+  boolean add(T piece);
 
   boolean canFit(T piece);
 
@@ -19,4 +19,5 @@ public interface Bin<T> {
   List<T> getCapacities();
 
   List<T> getPieces();
+
 }
