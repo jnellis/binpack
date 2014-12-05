@@ -11,7 +11,7 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Places pieces into the emptiest bin first.
@@ -20,12 +20,12 @@ import java.util.stream.Stream;
  */
 public class WorstFitPackingPolicy implements LinearPackingPolicy {
   @Override
-  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
-      existingBins, Stream<Double> availableCapacities) {
+  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
+      existingBins, List<Double> availableCapacities) {
     return null;
 
 //    pieces.forEach(piece -> {
-//      LinearBin<T> emptiest = new BinImpl<T>(capacity);
+//      LinearBin<Double> emptiest = new BinImpl<Double>(capacity);
 //      // find the emptiest bin or create a new one.
 //      emptiest = bins.stream().min(emptiest::compare)
 //          .orElse(createNewBin(bins, capacity));

@@ -9,7 +9,8 @@
 
 package net.jnellis.binpack.preorder;
 
-import java.util.stream.Stream;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -20,7 +21,8 @@ public class AscendingPolicy<T extends Comparable<T>> implements
     PreOrderPolicy<T> {
 
   @Override
-  public Stream<T> order(Stream<T> pieces) {
-    return pieces.sorted();
+  public List<T> order(List<T> pieces) {
+    Collections.sort(pieces);
+    return pieces;
   }
 }

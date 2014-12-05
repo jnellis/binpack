@@ -13,9 +13,9 @@ import net.jnellis.binpack.packing.PackingPolicy;
 import net.jnellis.binpack.preorder.AsIsPolicy;
 import net.jnellis.binpack.preorder.PreOrderPolicy;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 /**
  * @author Joe Nellis
@@ -37,42 +37,35 @@ abstract public class BinPacker<T extends Comparable<T>>
    * Fixed bin sizes that need to be filled first need an ordering policy also.
    */
   private Optional<PreOrderPolicy<Bin<T>>>
-      existingMaterialPreOrderPolicy = Optional.empty();
+      existingBinPreOrderPolicy = Optional.empty();
 
   /**
    * An ordering policy for available bin sizes (not existing bins) for when
    * a piece needs a new bin.
    */
   private Optional<PreOrderPolicy<T>>
-      availableMaterialPreOrderPolicy = Optional.empty();
+      availableCapacitiesPreOrderPolicy = Optional.empty();
 
   public BinPacker<T> setPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
     this.preOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
 
-
   public BinPacker<T>
-  setExistingMaterialPreOrderPolicy(PreOrderPolicy<Bin<T>> preOrderPolicy) {
-    this.existingMaterialPreOrderPolicy = Optional.ofNullable(preOrderPolicy);
+  setExistingBinPreOrderPolicy(PreOrderPolicy<Bin<T>> preOrderPolicy) {
+    this.existingBinPreOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
 
   public BinPacker<T>
-  setAvailableMaterialPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
-    this.availableMaterialPreOrderPolicy = Optional.ofNullable(preOrderPolicy);
+  setAvailableCapacitiesPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
+    this.availableCapacitiesPreOrderPolicy = Optional.ofNullable
+        (preOrderPolicy);
     return this; // chainable
   }
 
   abstract public BinPacker<T> setPackingPolicy(PackingPolicy<T> packingPolicy);
 
-  public BinPacker() {
-    // some defaults
-    this.preOrderPolicy = Optional.of(new AsIsPolicy<>());
-    this.existingMaterialPreOrderPolicy = Optional.of(new AsIsPolicy<>());
-    this.availableMaterialPreOrderPolicy = Optional.of(new AsIsPolicy<>());
-    //this.packingPolicy = new BestFitPackingPolicy<>();
-  }
 
   /**
    * Attempts to store <i>pieces</i> into the least amount of bins, starting
@@ -83,25 +76,29 @@ abstract public class BinPacker<T extends Comparable<T>>
    * @param pieces              List of pieces to be packed.
    * @param availableCapacities An array of bin capacities we can make when we
    *                            need another bin.
-   * @param existingBins  The initial set of bins will be made with these
+   * @param existingBins        The initial set of bins will be made with these
    *                            capacities.
    */
-  public Stream<Bin<T>> pack(Stream<T> pieces,
-                             Stream<Bin<T>> existingBins,
-                             Stream<T> availableCapacities) {
+  public List<Bin<T>> packAll(List<T> pieces,
+                                List<Bin<T>> existingBins,
+                                List<T> availableCapacities) {
 
-    if (availableMaterialPreOrderPolicy.isPresent()) {
-      availableMaterialPreOrderPolicy.get().order(availableCapacities);
-    }
-    if (existingMaterialPreOrderPolicy.isPresent()) {
-      existingMaterialPreOrderPolicy.get().order(existingBins);
-    }
-    if (preOrderPolicy.isPresent()) {
-      preOrderPolicy.get().order(pieces);
-    }
     if (packingPolicy.isPresent()) {
-      return packingPolicy.get().pack(pieces, existingBins,
-          availableCapacities);
+      // reorder inputs
+      pieces = preOrderPolicy.orElse(new AsIsPolicy<>()).order(pieces);
+
+      existingBins = existingBinPreOrderPolicy.orElse(new AsIsPolicy<>())
+          .order(existingBins);
+
+      availableCapacities = availableCapacitiesPreOrderPolicy
+          .orElse(new AsIsPolicy<>()).order(availableCapacities);
+
+      // pack one at a time
+      for(T piece : pieces){
+        existingBins = this.pack( piece, existingBins, availableCapacities);
+      }
+      return existingBins;
+
     } else {
       throw new NoSuchElementException("No PackingPolicy found for " +
           this.getClass().getName() + ".  Use this.setPackingPolicy()");
@@ -109,4 +106,23 @@ abstract public class BinPacker<T extends Comparable<T>>
   }
 
 
+  /**
+   * Attempts to place one <code>piece</code> into bins of <code>existing</code>
+   * sizes first then uses <code>available</code> bin sizes when it needs to
+   * fill a new bin.
+   *
+   * @param piece               The pieces that need to be packed.
+   * @param existingBins        Existing bins that pieces will be packed
+   *                            into first.
+   * @param availableCapacities Available bin sizes that we can create.
+   * @return Returns the new existingBins.
+   */
+  @Override
+  public List<Bin<T>> pack(T piece,
+                           List<Bin<T>> existingBins,
+                           List<T> availableCapacities) {
+    return packingPolicy.get()
+        .pack(piece, existingBins, availableCapacities);
+
+  }
 }

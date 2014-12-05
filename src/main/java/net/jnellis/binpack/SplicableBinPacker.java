@@ -2,11 +2,10 @@ package net.jnellis.binpack;
 
 import net.jnellis.binpack.packing.PackingPolicy;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 import static java.lang.Math.*;
 
@@ -19,77 +18,54 @@ public class SplicableBinPacker extends BinPacker<Double> {
 
 
   @Override
-  public BinPacker<Double> setPackingPolicy(PackingPolicy<Double> packingPolicy) {
+  public BinPacker<Double> setPackingPolicy(PackingPolicy<Double>
+                                                packingPolicy) {
     this.packingPolicy = Optional.of(packingPolicy);
     return null;
   }
 
   @Override
-  public Stream<Bin<Double>> pack(Stream<Double> pieces,
-                                  Stream<Bin<Double>> existingBins,
-                                  Stream<Double> availableCapacities) {
+  public List<Bin<Double>> packAll(List<Double> pieces,
+                                   List<Bin<Double>> existingBins,
+                                   List<Double> availableCapacities) {
 
-    return super.pack(createSplicePieces(pieces, availableCapacities),
+    return super.packAll(createSplicePieces(pieces, availableCapacities),
         existingBins,
         availableCapacities);
   }
 
-  /**
-   * Creates a stream of pieces that represents an originally larger piece.
-   *
-   * @param divisions
-   * @param max
-   * @param remainder
-   * @return
-   */
-  private DoubleStream createDoubleStream(int divisions, double max, double
-      remainder) {
-    int numSplicePieces = remainder > 0 ? divisions + 1 : divisions;
-    double splices[] = new double[numSplicePieces];
-
-    Arrays.fill(splices, 0, divisions, max);
-    if (remainder > 0) {
-      splices[divisions] = remainder;
-    }
-    return DoubleStream.of(splices);
-  }
 
   /**
-   * Finds any pieces that are longer than the maximum available capacity
-   * and breaks them up into smaller pieces of max available capacity
-   * and a remainder piece.
+   * Finds and replaces pieces that are longer than the maximum capacity
+   * with however many maximum capacity sized pieces plus a remainder piece.
+   * General order is maintained with pieces expanded as they are
+   * iterated through.
    *
-   * @param pieces     Stream of Doubles.
-   * @param capacities Stream of available capacities.
+   * @param pieces     list of pieces to pack
+   * @param capacities list of available capacities.
    * @return Returns the new <i>pieces</i> stream.
    */
-  public Stream<Double> createSplicePieces(Stream<Double> pieces,
-                                           Stream<Double> capacities) {
-    //@todo: remove stream assignments. yo more flo
-    Stream<Double> stream = pieces;
-    OptionalDouble maxAvailableCapacity = capacities.mapToDouble(i -> i).max();
+  public List<Double> createSplicePieces(List<Double> pieces,
+                                         List<Double> capacities) {
 
-    if (maxAvailableCapacity.isPresent()) {
-      double max = maxAvailableCapacity.getAsDouble();
-      // copy this stream and break up long piece by the max available
-      // capacity.
-      stream = pieces.flatMapToDouble(piece -> {
-            DoubleStream result = DoubleStream.empty();
-            if (piece > max) {
-              // compute num of divisors, the remainder.
-              int divisions = toIntExact(round(floor(piece / max)));
-              double remainder = piece - divisions * max;
-
-              // fill an array with the max values and one remainder
-              result = createDoubleStream(divisions, max, remainder);
-            } else {
-              result = DoubleStream.of(piece);
-            }
-            return result;
-          }
-      ).boxed();
+    Double maxCapacity = Collections.max(capacities);
+    // copy this stream and break up long piece by the max available
+    // capacity.
+    List<Double> newPieces = new ArrayList<>();
+    for (Double piece : pieces) {
+      if (piece > maxCapacity) {
+        // compute num of divisors, the remainder.
+        int divisions = toIntExact(round(floor(piece / maxCapacity)));
+        double remainder = piece - divisions * maxCapacity;
+        while (divisions-- > 0) {
+          newPieces.add(maxCapacity);
+        }
+        newPieces.add(remainder);
+      } else {
+        newPieces.add(piece);
+      }
     }
-    return pieces;
+    return newPieces;
   }
 
 

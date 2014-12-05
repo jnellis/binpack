@@ -11,7 +11,7 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Alternates placing pieces from front then back.
@@ -20,19 +20,19 @@ import java.util.stream.Stream;
  */
 public class CustomFitPackingPolicy    implements LinearPackingPolicy  {
   @Override
-  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
-      existingBins, Stream<Double> availableCapacities) {
+  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
+      existingBins, List<Double> availableCapacities) {
     return null;
 //
 //    boolean toggle = false;
-//    for (int i = 0; i < pieces.size(); i++) {
+//    for (int i = 0; i < pieces.size(); i+n+) {
 //      double piece = pieces.get(i);
 //      LinkedList<Double> onePiece = new LinkedList<>();
 //      onePiece.add(piece);
-//      FirstFitPackingPolicy<T> firstFitPackingPolicy = (FirstFitPackingPolicy<T>)this;
-//      firstFitPackingPolicy.pack(onePiece,bins,capacity);
+//      FirstFitPackingPolicy<Double> firstFitPackingPolicy = (FirstFitPackingPolicy<Double>)this;
 //      toggle ^= true; //xor with true
 //    }
+//      firstFitPackingPolicy.pack(onePiece,bins,capacity);
   }
 
 }

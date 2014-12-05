@@ -9,14 +9,14 @@
 
 package net.jnellis.binpack.preorder;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * @author Joe Nellis
  */
 public class AsIsPolicy<T extends Comparable<T>> implements PreOrderPolicy<T> {
   @Override
-  public Stream<T> order(Stream<T> pieces) {
+  public List<T> order(List<T> pieces) {
     return pieces;
   }
 }

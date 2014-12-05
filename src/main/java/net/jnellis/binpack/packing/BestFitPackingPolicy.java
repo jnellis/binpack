@@ -11,7 +11,7 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  *  Places a piece in fullest bin that has space.
@@ -21,8 +21,8 @@ public class BestFitPackingPolicy implements LinearPackingPolicy {
 
 
   @Override
-  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
-      existingBins, Stream<Double> availableCapacities) {
+  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
+      existingBins, List<Double> availableCapacities) {
     return null;
 
 

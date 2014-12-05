@@ -11,7 +11,7 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Places pieces in last bin or a new bin.
@@ -19,12 +19,12 @@ import java.util.stream.Stream;
  */
 public class NextFitPackingPolicy implements LinearPackingPolicy {
   @Override
-  public Stream<Bin<Double>> pack(Stream<Double> pieces, Stream<Bin<Double>>
-      existingBins, Stream<Double> availableCapacities) {
+  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
+      existingBins, List<Double> availableCapacities) {
     return null;
 //    pieces.forEach(piece -> {
-//      Bin<T> lastBin = null;
-//      ListIterator<Bin<T>> iterator = bins.listIterator();
+//      Bin<Double> lastBin = null;
+//      ListIterator<Bin<Double>> iterator = bins.listIterator();
 //      if (iterator.hasPrevious()) {
 //        lastBin = iterator.previous();
 //      }

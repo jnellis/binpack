@@ -9,8 +9,9 @@
 
 package net.jnellis.binpack.preorder;
 
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * @author Joe Nellis
@@ -18,8 +19,9 @@ import java.util.stream.Stream;
 public class DescendingPolicy<T extends Comparable<T>> implements PreOrderPolicy<T> {
 
   @Override
-  public Stream<T> order(Stream<T> pieces) {
-    return pieces.sorted(Comparator.reverseOrder());
+  public List<T> order(List<T> pieces) {
+    Collections.sort(pieces, Comparator.<T>reverseOrder());
+    return pieces;
   }
 
 }

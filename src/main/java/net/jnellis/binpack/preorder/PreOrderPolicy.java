@@ -10,13 +10,13 @@
 package net.jnellis.binpack.preorder;
 
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * @author Joe Nellis
  */
 @FunctionalInterface
 public interface PreOrderPolicy<T extends Comparable<T>> {
-   public Stream<T> order(Stream<T> pieces);
+   public List<T> order(List<T> pieces);
 }
 

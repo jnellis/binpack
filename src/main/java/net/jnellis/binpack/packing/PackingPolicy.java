@@ -11,10 +11,10 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
- * A packing algorithm that attempts to fit the most pieces in the least
+ * A packing algorithm that attempts to fit one piece in the least
  * amount of bins of a specified size.
  *
  * @author Joe Nellis
@@ -23,17 +23,17 @@ import java.util.stream.Stream;
 public interface PackingPolicy<T extends Comparable<T>> {
 
   /**
-   * Attempts to place <code>pieces</code> into bins of <code>existing</code>
+   * Attempts to place one <code>piece</code> into bins of <code>existing</code>
    * sizes first then uses <code>available</code> bin sizes when it needs to
    * fill a new bin.
    *
-   * @param pieces              The pieces that need to be packed.
+   * @param piece               The pieces that need to be packed.
    * @param existingBins        Existing bins that pieces will be packed
    *                            into first.
    * @param availableCapacities Available bin sizes that we can create.
    * @return Returns a stream of packed bins.
    */
-  public Stream<Bin<T>> pack(Stream<T> pieces,
-                                     Stream<Bin<T>> existingBins,
-                                     Stream<T> availableCapacities);
+  public List<Bin<T>> pack(T piece,
+                           List<Bin<T>> existingBins,
+                           List<T> availableCapacities);
 }
