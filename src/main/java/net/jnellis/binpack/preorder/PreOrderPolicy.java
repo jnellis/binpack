@@ -1,22 +1,26 @@
 /*
  * PreOrderPolicy.java
  *
- * Created on August 19, 2006, 7:08 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Copyright (c) 2014. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack.preorder;
 
-
 import java.util.List;
 
 /**
- * @author Joe Nellis
+ * An ordering policy for sorting pieces before being packed.
  */
 @FunctionalInterface
 public interface PreOrderPolicy<T extends Comparable<T>> {
-   public List<T> order(List<T> pieces);
+  /**
+   * Orders pieces and returns the ordered list.
+   *
+   * @param pieces A list of comparable pieces.
+   * @return the modified list of pieces.
+   */
+  public List<T> order(List<T> pieces);
 }
 

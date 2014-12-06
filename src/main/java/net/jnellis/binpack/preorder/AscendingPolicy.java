@@ -1,10 +1,9 @@
 /*
  * AscendingPolicy.java
  *
- * Created on August 19, 2006, 7:09 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Copyright (c) 2014. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack.preorder;
@@ -14,8 +13,7 @@ import java.util.List;
 
 
 /**
- *
- * @author Joe Nellis
+ * In place sorting of pieces in their ascending or 'natural' ordering.
  */
 public class AscendingPolicy<T extends Comparable<T>> implements
     PreOrderPolicy<T> {

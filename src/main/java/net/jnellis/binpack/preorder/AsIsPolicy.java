@@ -1,10 +1,9 @@
 /*
  * AsIsPolicy.java
  *
- * Created on August 26, 2006, 11:04 AM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Copyright (c) 2014. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack.preorder;
@@ -12,7 +11,7 @@ package net.jnellis.binpack.preorder;
 import java.util.List;
 
 /**
- * @author Joe Nellis
+ * A no-op ordering that leaves pieces as is.
  */
 public class AsIsPolicy<T extends Comparable<T>> implements PreOrderPolicy<T> {
   @Override
