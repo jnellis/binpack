@@ -1,10 +1,9 @@
 /*
  * BinPacker.java
  *
- * Created on August 5, 2006, 10:31 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Copyright (c) 2014. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack;
@@ -18,7 +17,19 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * @author Joe Nellis
+ * BinPacker is a {@link PackingPolicy} and a processor of packing operations.
+ * <pre>{@code
+ *     List<Double> pieces = Arrays.asList(3d, 4d, 8d, 5d, 7d); //piece lengths
+ *     List<Bin<Double>> bins = Collections.emptyList();
+ *     List<Double> capacities = Arrays.asList(6d);// bins are only 6.0 long
+ *     BinPacker<Double> binPacker = new SpliceableBinPacker();
+ *     bins = binPacker.setPreOrderPolicy(new DescendingPolicy<>())
+ *         .setPackingPolicy(new BestFitPackingPolicy<>())
+ *         .setAvailableCapacitiesPreOrderPolicy(new DescendingPolicy<>())
+ *         .packAll(pieces, bins, capacities);
+ * }</pre>
+ *
+ * @see  SpliceableBinPacker
  */
 abstract public class BinPacker<T extends Comparable<T>>
     implements PackingPolicy<T> {
@@ -46,17 +57,42 @@ abstract public class BinPacker<T extends Comparable<T>>
   private Optional<PreOrderPolicy<T>>
       availableCapacitiesPreOrderPolicy = Optional.empty();
 
+  /**
+   * Sets the ordering to be imposed on pieces. The method {@link #packAll}
+   * will sort pieces by this ordering before packing.  A suggested default
+   * would be {@link net.jnellis.binpack.preorder.DescendingPolicy}.
+   * @param preOrderPolicy The pre-ordering algorithm
+   * @return Returns this BinPacker for use in chainable operations.
+   */
   public BinPacker<T> setPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
     this.preOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
 
+  /**
+   * Sets the ordering to be imposed upon existing <code>Bin</code>s. The
+   * method {@link #packAll} will sort bins by each bin's <code>compareTo</code>
+   * method, preferably upon the bin's remaining capacity, with this policy.
+   * A suggested default would be
+   * {@link net.jnellis.binpack.preorder.DescendingPolicy}.
+   * @param preOrderPolicy The pre-ordering algorithm
+   * @return Returns this BinPacker for use in chainable operations.
+   */
   public BinPacker<T>
   setExistingBinPreOrderPolicy(PreOrderPolicy<Bin<T>> preOrderPolicy) {
     this.existingBinPreOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
   }
 
+  /**
+   * Sets the ordering to be imposed upon available capacities of new
+   * <code>Bin</code>s. The method {@link #packAll} will sort bin capacities
+   * in the order they will be tried when trying to fit a piece in a new
+   * bin. A suggested default would be the
+   * {@link net.jnellis.binpack.preorder.AscendingPolicy}
+   * @param preOrderPolicy The pre-ordering algorithm
+   * @return Returns this BinPacker for use in chainable operations.
+   */
   public BinPacker<T>
   setAvailableCapacitiesPreOrderPolicy(PreOrderPolicy<T> preOrderPolicy) {
     this.availableCapacitiesPreOrderPolicy = Optional.ofNullable
@@ -64,20 +100,26 @@ abstract public class BinPacker<T extends Comparable<T>>
     return this; // chainable
   }
 
+  /**
+   * Sets the packing algorithm to be used to fit pieces into bins.
+   * @param packingPolicy The algorithm to pack one piece into a set of bins.
+   * @return Returns this BinPacker for use in chainable operations.
+   */
   abstract public BinPacker<T> setPackingPolicy(PackingPolicy<T> packingPolicy);
 
 
   /**
-   * Attempts to store <i>pieces</i> into the least amount of bins, starting
-   * with <i>existingMaterial</i>. When a new bin is required, one is copied
-   * from the <i>availableMaterial</i> set according to the
-   * <i>availableMaterialPreOrderPolicy</i>.
+   * Attempts to store <code>pieces</code> into bins, starting
+   * with <code>existingBins</code>. When a new bin is required, one is copied
+   * from the <code>availableCapacities</code> set according to the
+   * <code>existingBinPreOrderPolicy</code>.
    *
    * @param pieces              List of pieces to be packed.
-   * @param availableCapacities An array of bin capacities we can make when we
-   *                            need another bin.
    * @param existingBins        The initial set of bins will be made with these
    *                            capacities.
+   * @param availableCapacities An array of bin capacities we can make when we
+   *                            need another bin.
+   * @return Returns the modified list of existingBins
    */
   public List<Bin<T>> packAll(List<T> pieces,
                                 List<Bin<T>> existingBins,
@@ -105,7 +147,6 @@ abstract public class BinPacker<T extends Comparable<T>>
     }
   }
 
-
   /**
    * Attempts to place one <code>piece</code> into bins of <code>existing</code>
    * sizes first then uses <code>available</code> bin sizes when it needs to
@@ -123,6 +164,5 @@ abstract public class BinPacker<T extends Comparable<T>>
                            List<T> availableCapacities) {
     return packingPolicy.get()
         .pack(piece, existingBins, availableCapacities);
-
   }
 }

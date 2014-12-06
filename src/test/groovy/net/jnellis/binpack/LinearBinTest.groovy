@@ -1,13 +1,15 @@
+/*
+ * LinearBinTest.groovy
+ *
+ * Copyright (c) 2014. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
+ */
+
 package net.jnellis.binpack
 
 import spock.lang.Specification
 
-/**
- * User: Joe
- * Date: 12/3/2014 
- * Time: 11:37 AM
- *
- */
 class LinearBinTest extends Specification {
   def "Add pieces to a bin, try to overstuff a couple."() {
     setup:
@@ -48,6 +50,16 @@ class LinearBinTest extends Specification {
     100d | false
   }
 
+  def "Existing bins only have one capacity."(){
+    when:
+    def bin =   new LinearBin(42.0);
+
+    then:
+      assert bin.isExisting() && bin.getCapacities().size() == 1
+
+
+  }
+
   def "Compare the max remaining capacity of two bins."(){
     setup:
     LinearBin smallBin = new LinearBin([20d])
@@ -63,6 +75,5 @@ class LinearBinTest extends Specification {
     and:
     bigBin.add(1d)
     assert smallBin < bigBin == false
-
   }
 }
