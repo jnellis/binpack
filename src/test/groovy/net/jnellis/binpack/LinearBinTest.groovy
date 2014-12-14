@@ -67,13 +67,13 @@ class LinearBinTest extends Specification {
 
     expect:
     assert smallBin < bigBin
-
     and:
     bigBin.add(20d);
-    assert smallBin < bigBin == false
+    assert smallBin.compareTo(bigBin) == 0
 
     and:
     bigBin.add(1d)
-    assert smallBin < bigBin == false
+    println "${LinearBin.getMaxRemainingCapacity(smallBin)} -- ${LinearBin.getMaxRemainingCapacity(bigBin)}"
+    assert smallBin > bigBin
   }
 }

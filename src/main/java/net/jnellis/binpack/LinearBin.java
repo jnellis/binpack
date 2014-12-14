@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -24,12 +25,11 @@ public class LinearBin implements Bin<Double> {
 
   private final List<Double> pieces = new ArrayList<>();
   private final List<Double> capacities;
-  private Double total = 0.0;
-
   /**
    * Flag indicating whether this bin was an existing bin.
    */
   private final boolean existing;
+  private Double total = 0.0;
 
   /**
    * Create a new bin. It will not be marked as an existing bin.
@@ -37,6 +37,7 @@ public class LinearBin implements Bin<Double> {
    * @param capacities The list of capacities that this bin could have.
    */
   public LinearBin(@NotNull List<Double> capacities) {
+    assert capacities.size() > 0;
     this.capacities = new ArrayList<>(capacities);
     this.existing = false;
   }
@@ -54,7 +55,21 @@ public class LinearBin implements Bin<Double> {
   }
 
   /**
+   * Computes the remaining capacity of this bin based on the maximum
+   * of its potential capacities.
+   *
+   * @param bin The bin we want to compute remaining capacity.
+   * @return The maximum potential remaining capacity.
+   */
+  public static double getMaxRemainingCapacity(@NotNull Bin<Double> bin) {
+
+    Optional<Double> max = bin.getCapacities().stream().max(Double::compare);
+    return max.get() - bin.getTotal();
+  }
+
+  /**
    * Automatically calls {@link #canFit} before placing the piece in the bin.
+   *
    * @param piece The piece to add.
    * @return true if the piece was added.
    */
@@ -104,21 +119,8 @@ public class LinearBin implements Bin<Double> {
   }
 
   /**
-   * Computes the remaining capacity of this bin based on the maximum
-   * of its potential capacities.
-   * @param bin The bin we want to compute remaining capacity.
-   * @return The maximum potential remaining capacity.
-   */
-  public static double getMaxRemainingCapacity(@NotNull Bin<Double> bin) {
-    double max = Collections.max(bin.getCapacities()) - bin.getTotal();
-    if (max < 0) {
-      throw new AssertionError("Max remaining capacity was negative: " + max);
-    }
-    return max;
-  }
-
-  /**
    * Compares two bins based on their maximum potential remaining capacity.
+   *
    * @param otherBin the other bin to compare.
    * @return Returns the same condition as {@link Double#compareTo}
    */
@@ -127,5 +129,11 @@ public class LinearBin implements Bin<Double> {
     return Double.compare(getMaxRemainingCapacity(this),
         getMaxRemainingCapacity(otherBin));
 
+  }
+
+  @Override
+  public String toString() {
+    return "LinearBin{" + "pieces=" + pieces + ", capacities=" + capacities +
+        ", total=" + total + ", existing=" + existing + '}';
   }
 }

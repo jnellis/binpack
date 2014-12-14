@@ -7,12 +7,10 @@
  */
 
 package net.jnellis.binpack
-
 import net.jnellis.binpack.packing.BestFitPackingPolicy
 import net.jnellis.binpack.packing.PackingPolicy
 import net.jnellis.binpack.preorder.DescendingPolicy
 import net.jnellis.binpack.preorder.PreOrderPolicy
-import spock.lang.Ignore
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -46,32 +44,34 @@ class SpliceableBinPackerTest extends Specification {
     [0d, 9d, 0d]         | 4d  | [4d, 4d, 1d]
   }
 
-  @Ignore
   @Unroll
+  // required for templating the test method name
   def "PackAll with #pop pieces into #pp with #existingBins existing bins and capacity: #capacities"() {
     setup:
     SpliceableBinPacker binPacker = new SpliceableBinPacker()
-
     binPacker.setPackingPolicy(packingPolicy).setPreOrderPolicy(preOrderPolicy)
 
     expect:
-    bins.each{ it.existing = true }
-    assert binPacker.packAll(pieces, bins, capacities) == newBins
+    bins.each { true == it.existing }
+    def result = binPacker.packAll(pieces, bins, capacities)
+    // new pieces are 6,6,5,4,3,3,2,2,1
+    def expected = [[5d], [4d], [6d], [6d], [3d, 3d], [2d, 2d, 1d]]
+    result.eachWithIndex { it, i ->
+      assert expected[i] == it.getPieces()
+    }
+
 
     where:
     pieces = [1d, 2d, 3d, 3d, 4d, 5d, 6d, 8d]
-
-    // adding true sets a flag that it is an existing bin.
-    bins = [new LinearBin([5d],true), new LinearBin([4d],true)]
-
+    // existing bins have a single capacity.
+    bins = [new LinearBin(5d), new LinearBin(4d)]
     capacities = [6d, 3d]
-
-    // new pieces are 6,6,5,4,3,3,2,2,1
-    newBins =[[5d],[4d],[6d],[6d],[3d,3d],[2d,2d,1d]]
-
+    // test method template descriptors
     pp = this.packingPolicy.getClass().getSimpleName()
     pop = this.preOrderPolicy.getClass().getSimpleName()
     existingBins = bins.size();
   }
 
+
 }
+
