@@ -11,29 +11,28 @@ package net.jnellis.binpack.packing;
 import net.jnellis.binpack.Bin;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Places a piece in fullest bin that has space.
- *
- * @author Joe Nellis
+ * Choose the fullest bin that has space.
  */
-public class BestFitPackingPolicy implements LinearPackingPolicy {
+public class BestFitPackingPolicy<T extends Comparable<T>>
+    implements PackingPolicy<T> {
 
+  /**
+   * Choose the fullest bin with space available.
+   *
+   * @param piece        The piece to be fitted into an existing bin.
+   * @param existingBins List of existing bins where the piece could fit.
+   * @return An {@link Optional } that represents the bin it found.
+   */
+  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
 
-  @Override
-  public List<Bin<Double>> pack(Double piece,
-                                List<Bin<Double>> existingBins,
-                                List<Double> availableCapacities) {
-
-    Bin<Double> fullestBinThatStillFits = existingBins.stream()
-        .filter(bin -> bin.canFit(piece))
-        .sorted() // by remaining capacity
-        .findFirst()
-        .orElseGet(() -> addNewBin(existingBins, piece, availableCapacities));
-
-    fullestBinThatStillFits.add(piece);
-    return existingBins;
+    // bins are compared by remaining capacity
+    return existingBins.stream()
+                       .filter(bin -> bin.canFit(piece))
+                       .sorted()
+                       .findFirst();
   }
-
 }
 

@@ -9,6 +9,7 @@
 package net.jnellis.binpack.packing
 
 import net.jnellis.binpack.Bin
+import net.jnellis.binpack.LinearBinPacker
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -28,9 +29,10 @@ class FirstFitPackingPolicyTest extends Specification {
   def "Pack the first bin with space available."() {
     setup:
     def policy = new FirstFitPackingPolicy()
+    def binPacker = new LinearBinPacker().setPackingPolicy(policy)
     def availableCapacities = [8d, 4d, 3d].asList()
     expect:
-    bins == policy.pack(piece, bins, availableCapacities)
+    bins == binPacker.pack(piece, bins, availableCapacities)
     bins.collect {
       it.getPieces()
     } == result

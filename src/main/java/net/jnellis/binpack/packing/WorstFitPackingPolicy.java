@@ -6,41 +6,32 @@
  * http://opensource.org/licenses/MIT
  */
 
-/*
- * WorstFitPackingPolicy.java
- *
- * Created on September 3, 2006, 5:34 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
-import net.jnellis.binpack.LinearBin;
 
+import java.util.Comparator;
 import java.util.List;
-
-import static java.util.Comparator.comparing;
+import java.util.Optional;
 
 /**
- * Places pieces into the emptiest bin first.
- *
- * @author Joe Nellis
+ * Chooses the emptiest bin first.
  */
-public class WorstFitPackingPolicy implements LinearPackingPolicy {
-  @Override
-  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
-      existingBins, List<Double> availableCapacities) {
+public class WorstFitPackingPolicy<T extends Comparable<T>>
+    implements PackingPolicy<T> {
 
-    Bin<Double> emptiestBin = existingBins.stream()
+  /**
+   * Chooses the emptiest bin first.
+   *
+   * @param piece        The piece to be fitted into an existing bin.
+   * @param existingBins List of existing bins where the piece could fit.
+   * @return an {@link Optional} that represents the bin it chose, or not.
+   */
+  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
+    return existingBins.stream()
         .filter(bin -> bin.canFit(piece))
-        .max(comparing(LinearBin::getMaxRemainingCapacity))
-        .orElseGet(() -> addNewBin(existingBins, piece, availableCapacities));
-
-    emptiestBin.add(piece);
-    return existingBins;
+        .sorted(Comparator.reverseOrder())
+        .findFirst();
   }
 
 

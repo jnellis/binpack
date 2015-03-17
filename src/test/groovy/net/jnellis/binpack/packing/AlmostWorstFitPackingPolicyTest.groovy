@@ -1,13 +1,14 @@
 /*
- * BestFitPackingPolicyTest.groovy
+ * AlmostWorstFitPackingPolicyTest.groovy
  *
- * Copyright (c) 2014. Joe Nellis
+ * Copyright (c) 2015. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
  * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack.packing
 
+import groovy.util.logging.Log
 import net.jnellis.binpack.Bin
 import net.jnellis.binpack.LinearBinPacker
 import spock.lang.Shared
@@ -16,21 +17,21 @@ import spock.lang.Unroll
 
 /**
  * User: Joe Nellis
- * Date: 12/6/2014 
- * Time: 8:21 PM
+ * Date: 3/10/2015 
+ * Time: 9:46 PM
  *
  */
-class BestFitPackingPolicyTest extends Specification {
-
+@Log
+class AlmostWorstFitPackingPolicyTest extends Specification {
   @Shared
   def bins = new ArrayList<Bin<Double>>();
 
   @Unroll
-  def "Pack the fullest bin that still has space."() {
+  def "Pack the second emptiest bin or a new bin."() {
     setup:
-    def policy = new BestFitPackingPolicy()
+    def policy = new AlmostWorstFitPackingPolicy()
     def binPacker = new LinearBinPacker().setPackingPolicy(policy)
-    def availableCapacities = [8d, 4d, 3d].asList()
+    def availableCapacities = [8d].asList()
     expect:
     bins == binPacker.pack(piece, bins, availableCapacities)
     bins.collect {
@@ -40,10 +41,12 @@ class BestFitPackingPolicyTest extends Specification {
     piece || result
 
     8d    || [[8d]]
-    7.9d  || [[8d], [7.9d]]
-    6d    || [[8d], [7.9d], [6d]]
-    5d    || [[8d], [7.9d], [6d], [5d]]
-    3d    || [[8d], [7.9d], [6d], [5d, 3d]]
-    2d    || [[8d], [7.9d], [6d, 2d], [5d, 3d]]
+    5d    || [[8d], [5d]]
+    5d    || [[8d], [5d], [5d]]
+    4d    || [[8d], [5d], [5d], [4d]]
+    3.6d  || [[8d], [5d], [5d], [4d], [3.6d]]
+    2.5d  || [[8d], [5d], [5d], [4d, 2.5d], [3.6d]]
+    2.3d  || [[8d], [5d, 2.3d], [5d], [4d, 2.5d], [3.6d]]
+    0.5d  || [[8d], [5d, 2.3d], [5d, 0.5d], [4d, 2.5d], [3.6d]]
   }
 }

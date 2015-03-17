@@ -6,50 +6,32 @@
  * http://opensource.org/licenses/MIT
  */
 
-/*
- * LastFitPackingPolicy.java
- *
- * Created on September 3, 2006, 5:15 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Places pieces in the farthest bin first.
- *
- * @author Joe Nellis
+ * Chooses the farthest bin first.
+ * Differs from {@link NextFitPackingPolicy} in that it filters pieces that
+ * could fit and then picks the last of them or returns an empty Optional.
  */
-public class LastFitPackingPolicy implements LinearPackingPolicy {
+public class LastFitPackingPolicy<T extends Comparable<T>>
+    implements PackingPolicy<T> {
+
 
   /**
-   * Attempts to place <code>piece</code> into the last bin of
-   * <code>existingBins</code> first then uses
-   * <code>availableCapacities</code> bin sizes when it
-   * needs to fill a new bin.
+   * Of all the pieces that fit, return the last one or an empty Optional.
    *
-   * @param piece               The pieces that need to be packed.
-   * @param existingBins        Existing bins that pieces will be packed
-   *                            into first.
-   * @param availableCapacities Available bin sizes that we can create.
-   * @return The collection <code>existingBins</code>
+   * @param piece        The piece to be fitted into an existing bin.
+   * @param existingBins List of existing bins where the piece could fit.
+   * @return an Optional Bin that represents the bin it found, or not.
    */
-  @Override
-  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
-      existingBins, List<Double> availableCapacities) {
-
-    Bin<Double> lastBinThatFits = existingBins.stream()
-        .filter(bin -> bin.canFit(piece))
-        .max((a, b) -> -1) // aka findLast
-        .orElseGet(() -> addNewBin(existingBins, piece, availableCapacities));
-
-    lastBinThatFits.add(piece);
-    return existingBins;
+  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
+    return existingBins.stream()
+                       .filter(bin -> bin.canFit(piece))
+                       .reduce((acc, bin) -> bin);
   }
 }

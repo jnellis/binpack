@@ -1,65 +1,37 @@
 /*
  * AlmostWorstFitPackingPolicy.java
  *
- * Created on September 4, 2006, 1:06 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Copyright (c) 2015. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Places pieces in the second emptiest bin first.
- *
- * @author Joe Nellis
+ * Chooses the second emptiest bin.
  */
-public class AlmostWorstFitPackingPolicy implements LinearPackingPolicy {
+public class AlmostWorstFitPackingPolicy<T extends Comparable<T>>
+    implements PackingPolicy<T> {
   /**
-   * Attempts to place <code>pieces</code> into bins of <code>existing</code>
-   * sizes first then uses <code>available</code> bin sizes when it needs to
-   * fill a new bin.
+   *  Chooses the second emptiest bin. Returns an {@link Optional }
+   *  which could be empty if no suitable bin was found.
    *
-   * @param piece              The pieces that need to be packed.
-   * @param existingBins        Existing bins that pieces will be packed
-   *                            into first.
-   * @param availableCapacities Available bin sizes that we can create.
-   * @return Returns a stream of packed bins.
+   * @param piece        The piece to be fitted into an existing bin.
+   * @param existingBins List of existing bins where the piece could fit.
+   * @return An {@link Optional } that represents the bin it found.
    */
-  @Override
-  public List<Bin<Double>> pack(Double piece, List<Bin<Double>>
-      existingBins, List<Double> availableCapacities) {
-    return null;
-
-
-//
-//    pieces.stream().forEach((Double piece) -> {
-//      // create two completely full bins
-//      LinearBin emptiest = new LinearBin(available);
-//      emptiest.add(capacity);
-//      LinearBin emptiest2 = new LinearBin<>(capacity);
-//      emptiest.add(capacity);
-//
-//      for (LinearBin<Double> bin : bins) {
-//        if (bin.compareDoubleo(emptiest2) < 0) {
-//          emptiest2 = bin;
-//          if (emptiest2.compareTo(emptiest) < 0) {
-//            LinearBin<Double> temp = emptiest;
-//            emptiest = emptiest2;
-//            emptiest2 = temp;
-//          }
-//        }
-//      }
-//      // if second emptiest still doesn't have room create a new Bin.
-//      if (!emptiest2.canFit(piece)) {
-//        emptiest2 = createNewBin(bins, capacity);
-//      }
-//      place(piece, emptiest2);
-//    });
+  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
+    return existingBins.stream()
+                       .filter(bin -> bin.canFit(piece))
+                       .sorted(Comparator.reverseOrder())
+                       .skip(1)
+                       .findFirst();
   }
-
 }

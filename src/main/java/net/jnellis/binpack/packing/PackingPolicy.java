@@ -1,10 +1,9 @@
 /*
  * PackingPolicy.java
  *
- * Created on August 19, 2006, 6:49 PM
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
+ * Copyright (c) 2015. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
  */
 
 package net.jnellis.binpack.packing;
@@ -12,28 +11,23 @@ package net.jnellis.binpack.packing;
 import net.jnellis.binpack.Bin;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
- * A packing algorithm that attempts to fit one piece in the least
- * amount of bins of a specified size.
- *
- * @author Joe Nellis
+ * A packing algorithm that attempts to find a bin that can fit a piece from a
+ * list of bins.
  */
 @FunctionalInterface
 public interface PackingPolicy<T extends Comparable<T>> {
 
+
   /**
-   * Attempts to place one <code>piece</code> into bins of <code>existing</code>
-   * sizes first then uses <code>available</code> bin sizes when it needs to
-   * fill a new bin.
+   * Chooses a bin that will fit the piece from a list of bins.
    *
-   * @param piece               The pieces that need to be packed.
-   * @param existingBins        Existing bins that pieces will be packed
-   *                            into first.
-   * @param availableCapacities Available bin sizes that we can create.
-   * @return Returns a stream of packed bins.
+   * @param piece             The piece to be fitted into an existing bin.
+   * @param existingBins List of existing bins where the piece could fit.
+   * @return Returns an Optional bin that represents the bin it found, or not.
    */
-  public List<Bin<T>> pack(T piece,
-                           List<Bin<T>> existingBins,
-                           List<T> availableCapacities);
+  Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins);
+
 }
