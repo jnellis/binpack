@@ -32,12 +32,11 @@ class FirstFitPackingPolicyTest extends Specification {
     def binPacker = new LinearBinPacker().setPackingPolicy(policy)
     def availableCapacities = [8d, 4d, 3d].asList()
     expect:
-    bins == binPacker.pack(piece, bins, availableCapacities)
-    bins.collect {
+    binPacker.pack(piece, bins, availableCapacities).collect {
       it.getPieces()
-    } == result
+    } == expectedResult
     where:
-    piece || result
+    piece || expectedResult
 
     8d    || [[8d]]
     5d    || [[8d], [5d]]
