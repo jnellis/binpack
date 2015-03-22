@@ -8,6 +8,8 @@
 
 package net.jnellis.binpack;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ import java.util.List;
  * the packing operation but exists as a given bin with the intention that it
  * represents results from a previous or partial packing operation.
  */
-public interface Bin<T> extends Comparable<Bin<T>> {
+public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
   /**
    * Add a piece to this bin. The piece should be checked by calling
    * <code>canFit()</code> first.
@@ -26,6 +28,20 @@ public interface Bin<T> extends Comparable<Bin<T>> {
    * @return true if the piece was add, false if it would not fit.
    */
   boolean add(T piece);
+
+
+  /**
+   * Computes the remaining capacity of this bin based on the maximum
+   * of its potential capacities.
+   *
+   * @return The maximum potential remaining capacity.
+   */
+  public T getMaxRemainingCapacity();
+
+  @Override
+  default int compareTo(@NotNull Bin<T> o) {
+    return getMaxRemainingCapacity().compareTo(o.getMaxRemainingCapacity());
+  }
 
   /**
    * Determines if the offered piece will fit in the bin.

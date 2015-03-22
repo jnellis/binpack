@@ -1,5 +1,5 @@
 /*
- * SplicableBinPacker.java
+ * SpliceableBinPacker.java
  *
  * Copyright (c) 2014. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -8,15 +8,12 @@
 
 package net.jnellis.binpack;
 
-import net.jnellis.binpack.packing.PackingPolicy;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * A  {@code BinPacker<Double>}  that pre-processes input pieces
+ * A  {@link LinearBinPacker}  that pre-processes input pieces
  * before packing. Each piece that is larger than the maximum available
  * capacity of a new bin (not an existing bin), is broken up into pieces
  * of that maximum capacity size, plus a remainder piece, if one exists, that
@@ -25,26 +22,8 @@ import java.util.Optional;
  * The dividing of pieces too big takes place in-order and before the call to
  * order pieces by the set preOrderPolicy before packing.
  */
-public class SpliceableBinPacker extends BinPacker<Double> {
+public class SpliceableBinPacker extends LinearBinPacker {
 
-
-  @Override
-  public BinPacker<Double> setPackingPolicy(PackingPolicy<Double>
-                                                packingPolicy) {
-    this.packingPolicy = Optional.of(packingPolicy);
-    return this;
-  }
-
-  @Override
-  public List<Bin<Double>> packAll(List<Double> pieces,
-                                   List<Bin<Double>> existingBins,
-                                   List<Double> availableCapacities) {
-
-    return super.packAll(
-        createSplicePieces(pieces, Collections.max(availableCapacities)),
-        existingBins,
-        availableCapacities);
-  }
 
   /**
    * Finds and replaces pieces that are longer than the maximum capacity
@@ -70,6 +49,17 @@ public class SpliceableBinPacker extends BinPacker<Double> {
       }
     }
     return newPieces;
+  }
+
+  @Override
+  public List<Bin<Double>> packAll(List<Double> pieces,
+                                   List<Bin<Double>> existingBins,
+                                   List<Double> availableCapacities) {
+
+    return super.packAll(
+        createSplicePieces(pieces, Collections.max(availableCapacities)),
+        existingBins,
+        availableCapacities);
   }
 
 

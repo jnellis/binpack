@@ -58,13 +58,13 @@ public class LinearBin implements Bin<Double> {
    * Computes the remaining capacity of this bin based on the maximum
    * of its potential capacities.
    *
-   * @param bin The bin we want to compute remaining capacity.
    * @return The maximum potential remaining capacity.
    */
-  public static double getMaxRemainingCapacity(@NotNull Bin<Double> bin) {
+  @Override
+  public Double getMaxRemainingCapacity() {
 
-    Optional<Double> max = bin.getCapacities().stream().max(Double::compare);
-    return max.get() - bin.getTotal();
+    Optional<Double> max = getCapacities().stream().max(Double::compare);
+    return max.get() - getTotal();
   }
 
   /**
@@ -118,18 +118,6 @@ public class LinearBin implements Bin<Double> {
     return Collections.unmodifiableList(pieces);
   }
 
-  /**
-   * Compares two bins based on their maximum potential remaining capacity.
-   *
-   * @param otherBin the other bin to compare.
-   * @return Returns the same condition as {@link Double#compareTo}
-   */
-  @Override
-  public int compareTo(@NotNull Bin<Double> otherBin) {
-    return Double.compare(getMaxRemainingCapacity(this),
-        getMaxRemainingCapacity(otherBin));
-
-  }
 
   @Override
   public String toString() {

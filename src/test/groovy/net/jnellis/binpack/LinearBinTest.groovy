@@ -11,7 +11,7 @@ package net.jnellis.binpack
 import spock.lang.Specification
 
 class LinearBinTest extends Specification {
-  def "Add pieces to a bin, try to overstuff a couple."() {
+  def "Add pieces to a bin, try to over stuff a couple."() {
     setup:
     // create a bin of 40 capacity only.
     LinearBin bin = new LinearBin([40d].asList())
@@ -73,7 +73,6 @@ class LinearBinTest extends Specification {
 
     and:
     bigBin.add(1d)
-    println "${LinearBin.getMaxRemainingCapacity(smallBin)} -- ${LinearBin.getMaxRemainingCapacity(bigBin)}"
     assert smallBin > bigBin
   }
 }

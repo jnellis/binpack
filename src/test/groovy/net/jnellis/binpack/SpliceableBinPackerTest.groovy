@@ -1,5 +1,5 @@
 /*
- * SplicableBinPackerTest.groovy
+ * SpliceableBinPackerTest.groovy
  *
  * Copyright (c) 2014. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -52,7 +52,7 @@ class SpliceableBinPackerTest extends Specification {
     binPacker.setPackingPolicy(packingPolicy).setPreOrderPolicy(preOrderPolicy)
 
     expect:
-    bins.each { true == it.existing }
+    bins.each { it.existing }
     def result = binPacker.packAll(pieces, bins, capacities)
     // new pieces are 6,6,5,4,3,3,2,2,1
     def expected = [[5d], [4d], [6d], [6d], [3d, 3d], [2d, 2d, 1d]]
