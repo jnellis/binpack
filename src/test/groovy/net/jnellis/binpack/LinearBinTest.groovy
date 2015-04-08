@@ -7,7 +7,6 @@
  */
 
 package net.jnellis.binpack
-
 import spock.lang.Specification
 
 class LinearBinTest extends Specification {
@@ -74,5 +73,23 @@ class LinearBinTest extends Specification {
     and:
     bigBin.add(1d)
     assert smallBin > bigBin
+  }
+
+  def "Find smallest capacity needed of a bin with multiple capacities."() {
+    setup:
+    LinearBin someBin = new LinearBin([20d, 16d, 12d])
+
+    expect:
+    assert someBin.smallestCapacityNeeded == 12d
+    and:
+    someBin.add(11d)
+    assert someBin.smallestCapacityNeeded == 12d
+    and:
+    someBin.add(4d)
+    assert someBin.smallestCapacityNeeded == 16d
+    and:
+    someBin.add(3d)
+    assert someBin.smallestCapacityNeeded == 20d
+
   }
 }

@@ -10,10 +10,7 @@ package net.jnellis.binpack;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -65,6 +62,20 @@ public class LinearBin implements Bin<Double> {
 
     Optional<Double> max = getCapacities().stream().max(Double::compare);
     return max.get() - getTotal();
+  }
+
+  /**
+   * Finds the minimal capacity needed given the current total.
+   *
+   * @return The minimal capacity of this bins capacities that is still
+   * bigger than the total packed.
+   */
+  public Double getSmallestCapacityNeeded() {
+    Optional<Double> min = getCapacities().stream()
+                                          .filter(capacity -> capacity >
+                                              getTotal())
+                                          .min(Comparator.comparing(capacity -> capacity - getTotal()));
+    return min.get();
   }
 
   /**
