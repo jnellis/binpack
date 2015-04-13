@@ -71,10 +71,10 @@ public class LinearBin implements Bin<Double> {
    * bigger than the total packed.
    */
   public Double getSmallestCapacityNeeded() {
-    Optional<Double> min = getCapacities().stream()
-                                          .filter(capacity -> capacity >
-                                              getTotal())
-                                          .min(Comparator.comparing(capacity -> capacity - getTotal()));
+    Optional<Double> min = getCapacities()
+        .stream()
+        .filter(capacity -> capacity >= getTotal())
+        .min(Comparator.comparing(capacity -> capacity - getTotal()));
     return min.get();
   }
 
