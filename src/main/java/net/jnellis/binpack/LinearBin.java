@@ -8,8 +8,6 @@
 package net.jnellis.binpack;
 
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.*;
 
 
@@ -33,7 +31,7 @@ public class LinearBin implements Bin<Double> {
    *
    * @param capacities The list of capacities that this bin could have.
    */
-  public LinearBin(@NotNull List<Double> capacities) {
+  public LinearBin(List<Double> capacities) {
     assert capacities.size() > 0;
     this.capacities = new ArrayList<>(capacities);
     this.existing = false;
@@ -45,7 +43,7 @@ public class LinearBin implements Bin<Double> {
    *
    * @param capacity The single capacity of this bin.
    */
-  public LinearBin(@NotNull Double capacity) {
+  public LinearBin(Double capacity) {
     this.capacities = new ArrayList<>();
     this.capacities.add(capacity);
     this.existing = true;
@@ -104,7 +102,7 @@ public class LinearBin implements Bin<Double> {
    * @return returns true if this piece can be fitted.
    */
   @Override
-  public boolean canFit(@NotNull Double piece) {
+  public boolean canFit(Double piece) {
     Double newTotal = getTotal() + piece;
     return capacities.stream().anyMatch(capacity -> capacity >= newTotal);
   }

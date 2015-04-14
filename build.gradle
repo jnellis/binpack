@@ -7,29 +7,29 @@
  * http://opensource.org/licenses/MIT
  */
 
+plugins {
+  id "com.jfrog.bintray" version "1.0"
+}
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
 
-
 compileJava.options.compilerArgs = ["-Xlint:unchecked"]
 version "1.1"
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-
-  //compile 'org.codehaus.groovy:groovy-all:2.3.7'
-    compile 'com.intellij:annotations:12.0'
-
-    // The production code uses the SLF4J logging API at compile time
-  //compile 'org.slf4j:slf4j-api:1.7.5'
-
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
-
 }
+
+task sourceJar(type: Jar) {
+  from sourceSets.main.allSource
+}
+
 
 publishing {
   publications {
@@ -39,6 +39,14 @@ publishing {
       version version
       from components.java
 
+      artifact sourceJar {
+        classifier "sources"
+      }
+
+      pom.withXml {
+        asNode().appendNode('description', 'A linear bin packing library.')
+      }
     }
   }
 }
+

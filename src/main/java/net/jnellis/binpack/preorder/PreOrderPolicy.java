@@ -21,6 +21,6 @@ public interface PreOrderPolicy<T extends Comparable<T>> {
    * @param pieces A list of comparable pieces.
    * @return the modified list of pieces.
    */
-  public List<T> order(List<T> pieces);
+  List<T> order(List<T> pieces);
 }
 

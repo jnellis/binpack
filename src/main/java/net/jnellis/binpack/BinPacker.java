@@ -14,7 +14,6 @@ import net.jnellis.binpack.preorder.AsIsPolicy;
 import net.jnellis.binpack.preorder.AscendingPolicy;
 import net.jnellis.binpack.preorder.DescendingPolicy;
 import net.jnellis.binpack.preorder.PreOrderPolicy;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -33,10 +32,9 @@ import java.util.function.Consumer;
  * BinPacker<Double> binPacker = new SpliceableBinPacker();
  * bins = binPacker.setPreOrderPolicy(new DescendingPolicy<>())
  *                 .setPackingPolicy(new BestFitPackingPolicy<>())
- *                 .setAvailableCapacitiesPreOrderPolicy( new
- *                 DescendingPolicy<>())
+ *                 .setAvailableCapacitiesPreOrderPolicy(
+ *                    new DescendingPolicy<>())
  *                 .packAll(pieces, bins, capacities);
-
  *  }</pre>
  *
  * @see  SpliceableBinPacker
@@ -86,7 +84,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return Returns this BinPacker for use in chainable operations.
    */
   public BinPacker<T> setPreOrderPolicy(
-      @NotNull PreOrderPolicy<T> preOrderPolicy) {
+      PreOrderPolicy<T> preOrderPolicy) {
 
     this.preOrderPolicy = Optional.ofNullable(preOrderPolicy);
     return this; // chainable
@@ -109,7 +107,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return Returns this BinPacker for use in chainable operations.
    */
   public BinPacker<T> setPackingPolicy(
-      @NotNull PackingPolicy<T> packingPolicy) {
+      PackingPolicy<T> packingPolicy) {
 
     this.packingPolicy = Optional.of(packingPolicy);
     return this;
@@ -135,7 +133,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return Returns this BinPacker for use in chainable operations.
    */
   public BinPacker<T> setExistingBinPreOrderPolicy(
-      @NotNull PreOrderPolicy<Bin<T>> preOrderPolicy) {
+      PreOrderPolicy<Bin<T>> preOrderPolicy) {
 
     this.existingBinPreOrderPolicy = Optional.of(preOrderPolicy);
     return this; // chainable
@@ -160,7 +158,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return Returns this BinPacker for use in chainable operations.
    */
   public BinPacker<T> setAvailableCapacitiesPreOrderPolicy(
-      @NotNull PreOrderPolicy<T> preOrderPolicy) {
+      PreOrderPolicy<T> preOrderPolicy) {
 
     this.availableCapacitiesPreOrderPolicy = Optional.of(preOrderPolicy);
     return this; // chainable
@@ -249,8 +247,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @param piece      The piece that will be packed later.
    * @param capacities The potential capacities of a new bin.
    */
-  protected void assertPieceWouldFitInANewBin(T piece,
-                                              List<T> capacities) {
+  void assertPieceWouldFitInANewBin(T piece, List<T> capacities) {
 
     if (piece.compareTo(Collections.max(capacities)) > 0) { // Houston!
       // we could check here to see if an existing bin is big enough
