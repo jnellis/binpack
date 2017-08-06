@@ -1,0 +1,68 @@
+/*
+ * bintray.gradle
+ *
+ * Copyright (c) 2015. Joe Nellis
+ * Distributed under MIT License. See accompanying file License.txt or at
+ * http://opensource.org/licenses/MIT
+ */
+
+
+
+apply plugin: 'maven-publish'
+
+task sourceJar(type: Jar) {
+  from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar){
+  dependsOn javadoc
+  from "${project.buildDir}/docs/"
+}
+
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      groupId 'net.jnellis'
+      artifactId 'binpack'
+      version project.version
+      from components.java
+
+      artifact sourceJar {
+        classifier "sources"
+      }
+
+      artifact  javadocJar {
+        classifier "javadoc"
+      }
+
+      pom.withXml {
+        asNode().appendNode('description', 'A linear bin packing library.')
+      }
+    }
+  }
+}
+
+bintray{
+  user = bintrayUser
+  key =  bintrayKey 
+  publications = ['mavenJava']
+  dryRun = true
+  publish = true
+
+  pkg{
+    repo = 'maven'
+    name = 'binpack'
+    desc = 'linear bin packing library'
+    websiteUrl = 'https://github.com/jnellis/binpack'
+    issueTrackerUrl = 'https://github.com/jnellis/binpack/issues'
+    vcsUrl = 'https://github.com/jnellis/binpack.git'
+    licenses = ['MIT']
+    version{
+      name = project.version
+      vcsTag = project.version
+      desc = 'Linear bin packing library.'
+    }
+  }
+
+}
