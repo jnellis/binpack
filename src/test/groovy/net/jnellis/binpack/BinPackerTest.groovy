@@ -41,26 +41,31 @@ class BinPackerTest extends Specification {
   def "SetPreOrderPolicy"() {
     binPacker.setPreOrderPolicy(uniquePreOrderPolicy)
     expect:
-    binPacker.preOrderPolicy.get().order([3, 4, 5]) == [1, 2, 3]
+    binPacker.preOrderPolicy.order([3, 4, 5]) == [1d, 2, 3]
   }
 
   def "SetExistingBinPreOrderPolicy"() {
-    binPacker.setExistingBinPreOrderPolicy(uniquePreOrderPolicy)
+    binPacker.setExistingBinPreOrderPolicy(new PreOrderPolicy<Bin<Integer>>() {
+      @Override
+      List<Bin<Integer>> order(List<Bin<Integer>> pieces) {
+        return [1, 2, 3] as List<Bin<Integer>>
+      }
+    })
     expect:
-    binPacker.existingBinPreOrderPolicy.get().order([3, 4, 5]) == [1, 2, 3]
+    binPacker.existingBinPreOrderPolicy.order([3, 4, 5] as List<Bin<Integer>>) ==
+        [1, 2, 3] as List<Bin<Double>>
   }
 
   def "SetAvailableCapacitiesPreOrderPolicy"() {
     binPacker.setAvailableCapacitiesPreOrderPolicy(uniquePreOrderPolicy)
     expect:
-    binPacker.availableCapacitiesPreOrderPolicy.get()
-        .order([3, 4, 5]) == [1, 2, 3]
+    binPacker.availableCapacitiesPreOrderPolicy.order([3, 4, 5]) == [1d, 2, 3]
   }
 
   def "SetPackingPolicy"() {
     binPacker.setPackingPolicy(uniquePackingPolicy)
     expect:
-    binPacker.packingPolicy.get().is(uniquePackingPolicy)
+    binPacker.packingPolicy.is(uniquePackingPolicy)
   }
 
   def "PackAll"() {
@@ -73,9 +78,9 @@ class BinPackerTest extends Specification {
                            [134d, 56d, 12d], [134d, 42d, 12d],
                            [109d, 87d], [99d, 86d, 18d],
                            [80d, 76d, 46d], [76d, 76d, 45d], [34d, 29d]
-    ]
+    ].sort()
     def result = binPacker.packAll(pieces, existingBins, availableCapacities)
-        .collect { it.pieces }
+                          .collect { it.pieces }.sort()
 
     expect:
     result == expectedPacking
@@ -106,14 +111,14 @@ class BinPackerTest extends Specification {
 
 
   def "test BinPacker javadoc example code"() {
-    List<Double> pieces = Arrays.asList(3d, 4d, 8d, 5d, 7d); //piece lengths
-    List<Bin<Double>> bins = new ArrayList<>();
-    List<Double> capacities = Arrays.asList(6d);// bins are only 6.0 long
-    BinPacker<Double> binPacker = new SpliceableBinPacker();
+    List<Double> pieces = Arrays.asList(3d, 4d, 8d, 5d, 7d) //piece lengths
+    List<Bin<Double>> bins = new ArrayList<>()
+    List<Double> capacities = Arrays.asList(6d)// bins are only 6.0 long
+    BinPacker<Double> binPacker = new SpliceableBinPacker()
     bins = binPacker.setPreOrderPolicy(new DescendingPolicy<>())
-        .setPackingPolicy(new BestFitPackingPolicy<>())
-        .setAvailableCapacitiesPreOrderPolicy(new DescendingPolicy<>())
-        .packAll(pieces, bins, capacities);
+                    .setPackingPolicy(new BestFitPackingPolicy<>())
+                    .setAvailableCapacitiesPreOrderPolicy(new DescendingPolicy<>())
+                    .packAll(pieces, bins, capacities)
 
     expect:
     bins*.pieces == [[6.0], [6.0], [5.0, 1.0], [4.0, 2.0], [3.0]]
