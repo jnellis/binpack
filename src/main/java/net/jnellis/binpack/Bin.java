@@ -18,9 +18,23 @@ import java.util.List;
  * represents results from a previous or partial packing operation.
  */
 public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
+
+  /**
+   * Convenience exception Supplier for dealing with the case where a bin
+   * has no capacities to base calculations on.
+   * This method ideally should never be called.
+   *
+   * @return An IllegalStateException informing that there must be at least
+   * one capacity value from {@link #getCapacities()}
+   */
+  static IllegalStateException mustBeAtLeastOneCapacityException() {
+
+    return new IllegalStateException("There must be at least one capacity.");
+  }
+
   /**
    * Add a piece to this bin. The piece should be checked by calling
-   * <code>canFit()</code> first.
+   * {@code canFit()} first.
    *
    * @param piece The piece to add.
    * @return true if the piece was added, false if it would not fit.
@@ -37,7 +51,7 @@ public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
   T getMaxRemainingCapacity();
 
   @Override
-  default int compareTo(Bin<T> o) {
+  default int compareTo(final Bin<T> o) {
     return getMaxRemainingCapacity().compareTo(o.getMaxRemainingCapacity());
   }
 
@@ -78,4 +92,12 @@ public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
    */
   List<T> getPieces();
 
+
+  /**
+   * Finds the minimal capacity needed given the current total.
+   *
+   * @return The minimal capacity of this bins capacities that is still
+   * bigger than the total packed.
+   */
+  T getSmallestCapacityNeeded();
 }
