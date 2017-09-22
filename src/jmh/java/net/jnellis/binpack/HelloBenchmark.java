@@ -8,6 +8,9 @@
 
 package net.jnellis.binpack;
 
+import net.jnellis.binpack.packing.*;
+import net.jnellis.binpack.preorder.AsIsPolicy;
+import net.jnellis.binpack.preorder.DescendingPolicy;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
@@ -34,7 +37,7 @@ public class HelloBenchmark {
 
   final Double CAPACITY = 8d;
 
-  final int AVG_PIECE = 5;
+  final int AVG_PIECE = 5;  // move this closer to capacity to create more bins
 
 
   List<Double> pieces = DoubleStream.generate(() -> Math.random() * AVG_PIECE)
@@ -46,26 +49,156 @@ public class HelloBenchmark {
 
 
   @Benchmark
-  public List<Bin<Double>> testLarge() {
-    return new LinearBinPacker().packAll(pieces,
-                                         new ArrayList<>(),
-                                         capacities);
+  public List<Bin<Double>> testLargeBestFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .packAll(
+            pieces,
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
   }
 
   @Benchmark
-  public List<Bin<Double>> testMedium() {
-    return new LinearBinPacker().packAll(pieces.subList(0, MEDIUM),
-                                         new ArrayList<>(),
-                                         capacities);
+  public List<Bin<Double>> testLargeNextFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .setPackingPolicy(new NextFitPackingPolicy<>())
+        .packAll(
+            pieces,
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testMediumBestFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .packAll(
+            pieces.subList(0, MEDIUM),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
 
   }
 
   @Benchmark
-  public List<Bin<Double>> testSmall() {
-    return new LinearBinPacker().packAll(pieces.subList(0, SMALL),
-                                         new ArrayList<>(),
-                                         capacities);
+  public List<Bin<Double>> testSmallBestFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
 
   }
 
+  @Benchmark
+  public List<Bin<Double>> testSmallBestFitDecreasing() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new DescendingPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testLargeAlmostWorstFit() {
+
+    List<Bin<Double>> bins =
+        new LinearBinPacker()
+            .setPreOrderPolicy(new AsIsPolicy<>())
+            .setPackingPolicy(new AlmostWorstFitPackingPolicy<>())
+            .packAll(
+                pieces,
+                new ArrayList<>(),
+                capacities);
+
+    return bins;
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testSmallAlmostWorstFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .setPackingPolicy(new AlmostWorstFitPackingPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testSmallNextFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .setPackingPolicy(new NextFitPackingPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testSmallLastFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .setPackingPolicy(new LastFitPackingPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testSmallFirstFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .setPackingPolicy(new FirstFitPackingPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+  }
+
+  @Benchmark
+  public List<Bin<Double>> testSmallWorstFit() {
+
+    List<Bin<Double>> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIsPolicy<>())
+        .setPackingPolicy(new WorstFitPackingPolicy<>())
+        .packAll(
+            pieces.subList(0, SMALL),
+            new ArrayList<>(),
+            capacities);
+
+    return bins;
+  }
 }

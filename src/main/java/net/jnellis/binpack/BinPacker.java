@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 //@formatter:off
+
 /**
  * BinPacker is a processor of packing operations.
  * <pre>{@code
@@ -35,7 +36,7 @@ import java.util.function.Consumer;
  *                 .packAll(pieces, bins, capacities);
  *  }</pre>
  *
- * @see  SpliceableBinPacker
+ * @see SpliceableBinPacker
  */
 //@formatter:on
 abstract public class BinPacker<T extends Comparable<T>> {
@@ -72,6 +73,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return the current PackingPolicy
    */
   public PackingPolicy<T> getPackingPolicy() {
+
     return packingPolicy;
   }
 
@@ -81,14 +83,11 @@ abstract public class BinPacker<T extends Comparable<T>> {
    *
    * @param packingPolicy The algorithm to pack one piece into a set of bins.
    * @return Returns this BinPacker for use in chainable operations.
-   *
-   * @throws NullPointerException if packingPolicy is null.
+   * @exception NullPointerException if packingPolicy is null.
    */
-  public BinPacker<T> setPackingPolicy(
-      PackingPolicy<T> packingPolicy) {
+  public BinPacker<T> setPackingPolicy(final PackingPolicy<T> packingPolicy) {
 
-    Objects.requireNonNull(packingPolicy,
-                           "PackingPolicy can't be null.");
+    Objects.requireNonNull(packingPolicy, "PackingPolicy can't be null.");
     this.packingPolicy = packingPolicy;
     return this;
   }
@@ -100,6 +99,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return the current PreOrderPolicy for existing bins.
    */
   public PreOrderPolicy<Bin<T>> getExistingBinPreOrderPolicy() {
+
     return existingBinPreOrderPolicy;
   }
 
@@ -109,17 +109,16 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * method, preferably upon the bin's remaining capacity, with this policy.
    * The default is {@link net.jnellis.binpack.preorder.DescendingPolicy} which
    * represents an ordering of emptiest bins first.
+   *
    * @param preOrderPolicy The pre-ordering algorithm
    * @return Returns this BinPacker for use in chainable operations.
-   *
-   * @throws NullPointerException if preOrderPolicy is null.
+   * @exception NullPointerException if preOrderPolicy is null.
    */
   public BinPacker<T> setExistingBinPreOrderPolicy(
-      PreOrderPolicy<Bin<T>> preOrderPolicy) {
+      final PreOrderPolicy<Bin<T>> preOrderPolicy) {
 
 
-    Objects.requireNonNull(preOrderPolicy,
-                           "PreOrderPolicy can't be null.");
+    Objects.requireNonNull(preOrderPolicy, "PreOrderPolicy can't be null.");
     this.existingBinPreOrderPolicy = preOrderPolicy;
     return this; // chainable
   }
@@ -131,6 +130,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return the PreOrderPolicy for available bin capacities.
    */
   public PreOrderPolicy<T> getAvailableCapacitiesPreOrderPolicy() {
+
     return availableCapacitiesPreOrderPolicy;
   }
 
@@ -139,16 +139,15 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * {@code Bin}s. The method {@link #packAll} will sort bin capacities
    * in the order they will be tried when trying to fit a piece in a new
    * bin. The default is {@link net.jnellis.binpack.preorder.AscendingPolicy}.
+   *
    * @param preOrderPolicy The pre-ordering algorithm
    * @return Returns this BinPacker for use in chainable operations.
-   *
-   * @throws NullPointerException if perOrderPolicy is null.
+   * @exception NullPointerException if perOrderPolicy is null.
    */
   public BinPacker<T> setAvailableCapacitiesPreOrderPolicy(
-      PreOrderPolicy<T> preOrderPolicy) {
+      final PreOrderPolicy<T> preOrderPolicy) {
 
-    Objects.requireNonNull(preOrderPolicy,
-                           "PreOrderPolicy can't be null.");
+    Objects.requireNonNull(preOrderPolicy, "PreOrderPolicy can't be null.");
     this.availableCapacitiesPreOrderPolicy = preOrderPolicy;
     return this; // chainable
   }
@@ -166,22 +165,22 @@ abstract public class BinPacker<T extends Comparable<T>> {
    *                            need another bin.
    * @return Returns the modified list of existingBins
    */
-  public List<Bin<T>> packAll(List<T> pieces,
-                              List<Bin<T>> existingBins,
-                              List<T> availableCapacities) {
+  public List<Bin<T>> packAll(final List<T> pieces,
+                              final List<Bin<T>> existingBins,
+                              final List<T> availableCapacities) {
 
 
     getPreOrderPolicy()
         .order(pieces)
         .forEach(
-            curriedPackFunction( //returns a function that packs a piece.
-                                 // order the existing bins by max
-                                 // remaining capacity
-                                 existingBinPreOrderPolicy
-                                     .order(existingBins),
-                                 //
-                                 availableCapacitiesPreOrderPolicy
-                                     .order(availableCapacities))
+            getPackFunction( //returns a function that packs a piece.
+                             // order the existing bins by max
+                             // remaining capacity
+                             existingBinPreOrderPolicy
+                                 .order(existingBins),
+                             //
+                             availableCapacitiesPreOrderPolicy
+                                 .order(availableCapacities))
         );
     return existingBins;
   }
@@ -192,6 +191,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @return the current PreOrderPolicy
    */
   public PreOrderPolicy<T> getPreOrderPolicy() {
+
     return preOrderPolicy;
   }
 
@@ -205,16 +205,17 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @exception NullPointerException if preOrderPolicy is null.
    */
   public BinPacker<T> setPreOrderPolicy(
-      PreOrderPolicy<T> preOrderPolicy) {
-    Objects.requireNonNull(preOrderPolicy,
-                           "PreOrderPolicy can't be null.");
+      final PreOrderPolicy<T> preOrderPolicy) {
+
+    Objects.requireNonNull(preOrderPolicy, "PreOrderPolicy can't be null.");
     this.preOrderPolicy = preOrderPolicy;
     return this; // chainable
   }
 
-  private Consumer<? super T> curriedPackFunction(List<Bin<T>> orderedBins,
-                                                  List<T> orderedCapacities) {
-    return (piece) -> pack(piece, orderedBins, orderedCapacities);
+  private Consumer<? super T> getPackFunction(final List<Bin<T>> bins,
+                                              final List<T> capacities) {
+
+    return (piece) -> pack(piece, bins, capacities);
   }
 
   /**
@@ -228,14 +229,15 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @param availableCapacities Available bin sizes that we can create.
    * @return Returns the new existingBins.
    */
-  public List<Bin<T>> pack(T piece,
-                           List<Bin<T>> existingBins,
-                           List<T> availableCapacities) {
+  public List<Bin<T>> pack(final T piece,
+                           final List<Bin<T>> existingBins,
+                           final List<T> availableCapacities) {
 
     this.packingPolicy.chooseBin(piece, existingBins)
-                      .orElseGet(() -> addNewBin(existingBins,
-                                                 piece,
-                                                 availableCapacities))
+                      .orElseGet(() -> addNewBin(
+                          existingBins,
+                          piece,
+                          availableCapacities))
                       .add(piece);
     return existingBins;
   }
@@ -252,7 +254,7 @@ abstract public class BinPacker<T extends Comparable<T>> {
    * @param piece      The piece that will be packed later.
    * @param capacities The potential capacities of a new bin.
    */
-  void assertPieceWouldFitInANewBin(T piece, List<T> capacities) {
+  void assertPieceWouldFitInANewBin(final T piece, final List<T> capacities) {
 
     if (piece.compareTo(Collections.max(capacities)) > 0) { // Houston!
       // we could check here to see if an existing bin is big enough

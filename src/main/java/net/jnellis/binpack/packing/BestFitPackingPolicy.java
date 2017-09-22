@@ -10,6 +10,7 @@ package net.jnellis.binpack.packing;
 
 import net.jnellis.binpack.Bin;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,13 +27,14 @@ public class BestFitPackingPolicy<T extends Comparable<T>>
    * @param existingBins List of existing bins where the piece could fit.
    * @return An {@link Optional } that represents the bin it found.
    */
-  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
+  public Optional<Bin<T>> chooseBin(final T piece,
+                                    final List<Bin<T>> existingBins) {
 
     // bins are compared by remaining capacity
     return existingBins.stream()
-                       .filter(bin -> bin.canFit(piece))
-                       .sorted()
-                       .findFirst();
+                       .filter(binsThatCanFit(piece))
+                       .min(Comparator.naturalOrder());
   }
+
 }
 

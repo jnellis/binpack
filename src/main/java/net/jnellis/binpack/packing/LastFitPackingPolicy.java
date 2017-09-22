@@ -29,9 +29,12 @@ public class LastFitPackingPolicy<T extends Comparable<T>>
    * @param existingBins List of existing bins where the piece could fit.
    * @return an Optional Bin that represents the bin it found, or not.
    */
-  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
-    return existingBins.stream()
-                       .filter(bin -> bin.canFit(piece))
-                       .reduce((acc, bin) -> bin);
+  public Optional<Bin<T>> chooseBin(final T piece,
+                                    final List<Bin<T>> existingBins) {
+
+    return PackingPolicy.reverseStream(existingBins)
+                        .filter(binsThatCanFit(piece))
+                        .findFirst();
+
   }
 }

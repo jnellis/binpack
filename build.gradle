@@ -28,10 +28,11 @@ dependencies {
 
 //https://github.com/melix/jmh-gradle-plugin
 jmh {
+  include=[".*Fit"]
   iterations = 10
-  warmupIterations = 5
+  warmupIterations = 10
   jmhVersion = '1.19'
   benchmarkMode = ['thrpt']
-  resultsFile = project.file("${project.buildDir}/reports/jmh/results${Math.random()}.txt")
-  fork = 2
+  resultsFile = project.file("${project.projectDir}/reports/jmh/jmh${System.currentTimeMillis()}.txt")
+  fork = 3
 }

@@ -27,11 +27,12 @@ public class WorstFitPackingPolicy<T extends Comparable<T>>
    * @param existingBins List of existing bins where the piece could fit.
    * @return an {@link Optional} that represents the bin it chose, or not.
    */
-  public Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins) {
+  public Optional<Bin<T>> chooseBin(final T piece,
+                                    final List<Bin<T>> existingBins) {
+
     return existingBins.stream()
-        .filter(bin -> bin.canFit(piece))
-        .sorted(Comparator.reverseOrder())
-        .findFirst();
+                       .filter(binsThatCanFit(piece))
+                       .max(Comparator.naturalOrder());
   }
 
 
