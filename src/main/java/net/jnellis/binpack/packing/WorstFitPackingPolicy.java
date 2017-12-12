@@ -17,8 +17,10 @@ import java.util.Optional;
 /**
  * Chooses the emptiest bin first.
  */
-public class WorstFitPackingPolicy<T extends Comparable<T>>
-    implements PackingPolicy<T> {
+public class WorstFitPackingPolicy<
+    P extends Comparable<P>,
+    C extends Comparable<C>>
+    implements PackingPolicy<P, C> {
 
   /**
    * Chooses the emptiest bin first.
@@ -27,8 +29,8 @@ public class WorstFitPackingPolicy<T extends Comparable<T>>
    * @param existingBins List of existing bins where the piece could fit.
    * @return an {@link Optional} that represents the bin it chose, or not.
    */
-  public Optional<Bin<T>> chooseBin(final T piece,
-                                    final List<Bin<T>> existingBins) {
+  public Optional<Bin<P, C>> chooseBin(final P piece,
+                                       final List<Bin<P, C>> existingBins) {
 
     return existingBins.stream()
                        .filter(binsThatCanFit(piece))

@@ -18,8 +18,10 @@ import java.util.Optional;
  * Differs from {@link NextFitPackingPolicy} in that it filters pieces that
  * could fit and then picks the last of them or returns an empty Optional.
  */
-public class LastFitPackingPolicy<T extends Comparable<T>>
-    implements PackingPolicy<T> {
+public class LastFitPackingPolicy<
+    P extends Comparable<P>,
+    C extends Comparable<C>>
+    implements PackingPolicy<P, C> {
 
 
   /**
@@ -29,8 +31,8 @@ public class LastFitPackingPolicy<T extends Comparable<T>>
    * @param existingBins List of existing bins where the piece could fit.
    * @return an Optional Bin that represents the bin it found, or not.
    */
-  public Optional<Bin<T>> chooseBin(final T piece,
-                                    final List<Bin<T>> existingBins) {
+  public Optional<Bin<P, C>> chooseBin(final P piece,
+                                       final List<Bin<P, C>> existingBins) {
 
     return PackingPolicy.reverseStream(existingBins)
                         .filter(binsThatCanFit(piece))

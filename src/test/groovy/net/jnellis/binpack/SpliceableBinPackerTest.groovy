@@ -17,7 +17,7 @@ import spock.lang.Unroll
 
 class SpliceableBinPackerTest extends Specification {
   @Shared
-  PackingPolicy<Double> packingPolicy = new BestFitPackingPolicy<>()
+  PackingPolicy<Double, Double> packingPolicy = new BestFitPackingPolicy<>()
   @Shared
   PreOrderPolicy<Double> preOrderPolicy = new DescendingPolicy<>()
 

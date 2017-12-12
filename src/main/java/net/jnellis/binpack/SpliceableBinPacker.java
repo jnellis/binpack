@@ -25,20 +25,33 @@ import java.util.List;
 public class SpliceableBinPacker extends LinearBinPacker {
 
 
+  @Override
+  public List<Bin<Double, Double>> packAll(final List<Double> pieces,
+                                           final List<Bin<Double, Double>>
+                                               existingBins,
+                                           final List<Double>
+                                               availableCapacities) {
+
+    return super.packAll(
+        createSplicePieces(pieces, Collections.max(availableCapacities)),
+        existingBins,
+        availableCapacities);
+  }
+
   /**
    * Finds and replaces pieces that are longer than the maximum capacity
    * with however many maximum capacity sized pieces plus a remainder piece.
-   * General order is maintained with pieces expanded as they are
+   * Natural order is maintained with pieces exploded as they are
    * iterated through.
    *
    * @param pieces      list of pieces to pack
    * @param maxCapacity list of available maxCapacity.
    * @return Returns the new <i>pieces</i> stream.
    */
-  public static List<Double> createSplicePieces(final List<Double> pieces,
+  public static List<Double> createSplicePieces(final Iterable<Double> pieces,
                                                 final Double maxCapacity) {
 
-    List<Double> newPieces = new ArrayList<>();
+    final List<Double> newPieces = new ArrayList<>();
     for (Double piece : pieces) {
       while (piece > maxCapacity) {
         piece = piece - maxCapacity;
@@ -49,17 +62,6 @@ public class SpliceableBinPacker extends LinearBinPacker {
       }
     }
     return newPieces;
-  }
-
-  @Override
-  public List<Bin<Double>> packAll(List<Double> pieces,
-                                   List<Bin<Double>> existingBins,
-                                   List<Double> availableCapacities) {
-
-    return super.packAll(
-        createSplicePieces(pieces, Collections.max(availableCapacities)),
-        existingBins,
-        availableCapacities);
   }
 
 

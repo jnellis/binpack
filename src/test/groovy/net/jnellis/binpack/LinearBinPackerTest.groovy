@@ -29,7 +29,7 @@ class LinearBinPackerTest extends Specification {
 
   def "AddNewBin"() {
     when:
-    def newBin = binPacker.addNewBin(bins, piece, availableCapacities)
+    def newBin = binPacker.addNewBin(piece, bins, availableCapacities)
     then:
     newBin != null
     bins.size() == 1
@@ -37,7 +37,7 @@ class LinearBinPackerTest extends Specification {
 
   def "AddNewBin when piece is larger than max capacity of new bin."() {
     when:
-    binPacker.addNewBin(bins, 9000d, availableCapacities)
+    binPacker.addNewBin(9000d, bins, availableCapacities)
     then:
     thrown(AssertionError)
 

@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AsIsPolicy<T extends Comparable<T>> implements PreOrderPolicy<T> {
   @Override
-  public List<T> order(List<T> pieces) {
+  public List<T> order(final List<T> pieces) {
     return pieces;
   }
 }

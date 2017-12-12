@@ -21,7 +21,9 @@ import java.util.stream.Stream;
  * list of bins.
  */
 @FunctionalInterface
-public interface PackingPolicy<T extends Comparable<T>> {
+public interface PackingPolicy<
+    P extends Comparable<P>,
+    C extends Comparable<C>> {
 
   /**
    * Creates a stream that traverses the given list in reverse order. The
@@ -32,7 +34,7 @@ public interface PackingPolicy<T extends Comparable<T>> {
    * @param <B>  meant to be a bin type but can be any object.
    * @return A stream that traverses the given list in reverse order.
    */
-  static <B> Stream<B> reverseStream(List<B> bins) {
+  static <B> Stream<B> reverseStream(final List<B> bins) {
 
     final int lastIndex = bins.size() - 1;
     return IntStream.rangeClosed(0, lastIndex)
@@ -46,7 +48,8 @@ public interface PackingPolicy<T extends Comparable<T>> {
    * @param existingBins List of existing bins where the piece could fit.
    * @return Returns an Optional bin that represents the bin it found, or not.
    */
-  Optional<Bin<T>> chooseBin(T piece, List<Bin<T>> existingBins);
+  Optional<Bin<P, C>>
+  chooseBin(P piece, List<Bin<P, C>> existingBins);
 
   /**
    * Creates a predicate for bins that can fit this particular piece.
@@ -60,7 +63,7 @@ public interface PackingPolicy<T extends Comparable<T>> {
    * @param piece The piece that will be packed next.
    * @return Predicate for checking if a bin fits the given piece.
    */
-  default Predicate<Bin<T>> binsThatCanFit(final T piece) {
+  default Predicate<Bin<P, C>> binsThatCanFit(final P piece) {
 
     return bin -> bin.canFit(piece);
   }

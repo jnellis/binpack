@@ -17,20 +17,10 @@ import java.util.List;
  * the packing operation but exists as a given bin with the intention that it
  * represents results from a previous or partial packing operation.
  */
-public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
+public interface Bin<PIECE extends Comparable<PIECE>,
+    CAPACITY extends Comparable<CAPACITY>>
+    extends Comparable<Bin<PIECE, CAPACITY>>, CapacitySupport<CAPACITY> {
 
-  /**
-   * Convenience exception Supplier for dealing with the case where a bin
-   * has no capacities to base calculations on.
-   * This method ideally should never be called.
-   *
-   * @return An IllegalStateException informing that there must be at least
-   * one capacity value from {@link #getCapacities()}
-   */
-  static IllegalStateException mustBeAtLeastOneCapacityException() {
-
-    return new IllegalStateException("There must be at least one capacity.");
-  }
 
   /**
    * Add a piece to this bin. The piece should be checked by calling
@@ -39,21 +29,14 @@ public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
    * @param piece The piece to add.
    * @return true if the piece was added, false if it would not fit.
    */
-  boolean add(T piece);
-
-
-  /**
-   * Computes the remaining capacity of this bin based on the maximum
-   * of its potential capacities.
-   *
-   * @return The maximum potential remaining capacity.
-   */
-  T getMaxRemainingCapacity();
+  boolean add(PIECE piece);
 
   @Override
-  default int compareTo(final Bin<T> o) {
+  default int compareTo(final Bin<PIECE, CAPACITY> o) {
+
     return getMaxRemainingCapacity().compareTo(o.getMaxRemainingCapacity());
   }
+
 
   /**
    * Determines if the offered piece will fit in the bin.
@@ -61,7 +44,7 @@ public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
    * @param piece The piece to fit.
    * @return true if the piece will fit.
    */
-  boolean canFit(T piece);
+  boolean canFit(PIECE piece);
 
   /**
    * Returns whether this bin is an existing bin and not created on the fly
@@ -71,33 +54,13 @@ public interface Bin<T extends Comparable<T>> extends Comparable<Bin<T>> {
    */
   boolean isExisting();
 
-  /**
-   * Returns the representation of the aggregate of items in the bin.
-   *
-   * @return a total within the context of the type of bin.
-   */
-  T getTotal();
-
-  /**
-   * A list of potential capacities that this bin could have.
-   *
-   * @return a list of current capacities that this bin could have.
-   */
-  List<T> getCapacities();
 
   /**
    * The pieces contained in the bin.
    *
    * @return a list of current pieces in this bin.
    */
-  List<T> getPieces();
+  List<PIECE> getPieces();
 
 
-  /**
-   * Finds the minimal capacity needed given the current total.
-   *
-   * @return The minimal capacity of this bins capacities that is still
-   * bigger than the total packed.
-   */
-  T getSmallestCapacityNeeded();
 }

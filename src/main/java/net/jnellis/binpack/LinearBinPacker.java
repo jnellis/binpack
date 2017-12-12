@@ -13,25 +13,23 @@ import java.util.List;
 /**
  * A bin packer for length types only.
  */
-public class LinearBinPacker extends BinPacker<Double> {
+public class LinearBinPacker extends BinPacker<Double, Double> {
 
   /**
    * Creates a new {@code LinearBin} using {@code availableCapacities}
    * and then adds it to the list of {@code bins}.
    *
-   * @param bins                List of bins.
    * @param piece               A piece used to assert it would fit a max
    *                            capacity bin.
+   * @param bins                List of bins.
    * @param availableCapacities List of capacities that the new bin could be.
    * @return the new LinearBin.
    */
-  Bin<Double> addNewBin(final List<Bin<Double>> bins,
-                        final Double piece,
-                        final List<Double> availableCapacities) {
+  Bin<Double, Double> addNewBin(final Double piece,
+                                final List<Bin<Double, Double>> bins,
+                                final List<Double> availableCapacities) {
 
-    //assertPieceWouldFitInANewBin(piece, availableCapacities);
-
-    final Bin<Double> theBin = new LinearBin(availableCapacities);
+    final Bin<Double, Double> theBin = new LinearBin(availableCapacities);
     if (!theBin.canFit(piece) || !bins.add(theBin)) {
       throw new AssertionError("Can't add bin to list of existingBins.");
     }

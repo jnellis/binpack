@@ -9,11 +9,8 @@
 package net.jnellis.binpack
 
 import net.jnellis.binpack.packing.BestFitPackingPolicy
-import net.jnellis.binpack.packing.PackingPolicy
 import net.jnellis.binpack.preorder.DescendingPolicy
-import net.jnellis.binpack.preorder.PreOrderPolicy
 import spock.lang.Specification
-
 /**
  * User: Joe Nellis
  * Date: 3/21/2015 
@@ -23,50 +20,6 @@ import spock.lang.Specification
 class BinPackerTest extends Specification {
   def binPacker = new LinearBinPacker()
 
-  def uniquePackingPolicy = new PackingPolicy<Integer>() {
-    @Override
-    Optional<Bin<Integer>> chooseBin(Integer piece,
-                                     List<Bin<Integer>> existingBins) {
-      return Optional.of([5, 6, 7] as Bin<Integer>)
-    }
-  }
-
-  def uniquePreOrderPolicy = new PreOrderPolicy<Integer>() {
-    @Override
-    List order(List pieces) {
-      return [1, 2, 3]
-    }
-  }
-
-  def "SetPreOrderPolicy"() {
-    binPacker.setPreOrderPolicy(uniquePreOrderPolicy)
-    expect:
-    binPacker.preOrderPolicy.order([3, 4, 5]) == [1d, 2, 3]
-  }
-
-  def "SetExistingBinPreOrderPolicy"() {
-    binPacker.setExistingBinPreOrderPolicy(new PreOrderPolicy<Bin<Integer>>() {
-      @Override
-      List<Bin<Integer>> order(List<Bin<Integer>> pieces) {
-        return [1, 2, 3] as List<Bin<Integer>>
-      }
-    })
-    expect:
-    binPacker.existingBinPreOrderPolicy.order([3, 4, 5] as List<Bin<Integer>>) ==
-        [1, 2, 3] as List<Bin<Double>>
-  }
-
-  def "SetAvailableCapacitiesPreOrderPolicy"() {
-    binPacker.setAvailableCapacitiesPreOrderPolicy(uniquePreOrderPolicy)
-    expect:
-    binPacker.availableCapacitiesPreOrderPolicy.order([3, 4, 5]) == [1d, 2, 3]
-  }
-
-  def "SetPackingPolicy"() {
-    binPacker.setPackingPolicy(uniquePackingPolicy)
-    expect:
-    binPacker.packingPolicy.is(uniquePackingPolicy)
-  }
 
   def "PackAll"() {
     def existingBins = []

@@ -9,6 +9,7 @@
 plugins {
   id "com.jfrog.bintray" version "1.0"
   id "me.champeau.gradle.jmh" version "0.4.3"
+  id "io.morethan.jmhreport" version "0.6.2.1"
 }
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -26,13 +27,25 @@ dependencies {
   testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
+def reportFile = project.file("${project.projectDir}/reports/jmh/report.json")
+
 //https://github.com/melix/jmh-gradle-plugin
 jmh {
-  include=[".*Fit"]
+  include = [".*Fit.*"]
   iterations = 10
   warmupIterations = 10
   jmhVersion = '1.19'
-  benchmarkMode = ['thrpt']
-  resultsFile = project.file("${project.projectDir}/reports/jmh/jmh${System.currentTimeMillis()}.txt")
-  fork = 3
+  benchmarkMode = ['ss']
+  resultFormat = 'JSON'
+  resultsFile = reportFile
+  profilers=[]
+  fork = 4
+  timeUnit ='us'
 }
+
+jmhReport {
+  jmhResultPath = reportFile
+  jmhReportOutput = project.file("${project.projectDir}/reports/jmh")
+}
+
+tasks.jmh.finalizedBy tasks.jmhReport

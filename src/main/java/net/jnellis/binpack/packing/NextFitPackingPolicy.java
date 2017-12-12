@@ -20,8 +20,10 @@ import java.util.Optional;
  * can fit after choosing the last bin. LastFitPackingPolicy filters bins that
  * could fit first then chooses the last bin.
  */
-public class NextFitPackingPolicy<T extends Comparable<T>>
-    implements PackingPolicy<T> {
+public class NextFitPackingPolicy<
+    P extends Comparable<P>,
+    C extends Comparable<C>>
+    implements PackingPolicy<P, C> {
 
   /**
    * Choose last bin, if the piece fits return the bin otherwise return
@@ -31,19 +33,11 @@ public class NextFitPackingPolicy<T extends Comparable<T>>
    * @param existingBins List of existing bins where the piece could fit.
    * @return The Optional bin if it fits or an empty optional.
    */
-  public Optional<Bin<T>> chooseBin(final T piece,
-                                    final List<Bin<T>> existingBins) {
+  public Optional<Bin<P, C>> chooseBin(final P piece,
+                                       final List<Bin<P, C>> existingBins) {
 
     return PackingPolicy.reverseStream(existingBins)
                         .findFirst()
                         .filter(binsThatCanFit(piece));
-
-//    if (!existingBins.isEmpty()) {
-//      final Bin<T> bin = existingBins.get(existingBins.size() - 1);
-//      if (bin.canFit(piece)) {
-//        return Optional.of(bin);
-//      }
-//    }
-//    return Optional.empty();
   }
 }

@@ -19,7 +19,7 @@ public class AscendingPolicy<T extends Comparable<T>> implements
     PreOrderPolicy<T> {
 
   @Override
-  public List<T> order(List<T> pieces) {
+  public List<T> order(final List<T> pieces) {
     Collections.sort(pieces);
     return pieces;
   }

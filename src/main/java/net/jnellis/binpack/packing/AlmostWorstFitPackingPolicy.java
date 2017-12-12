@@ -17,8 +17,10 @@ import java.util.Optional;
 /**
  * Chooses the second emptiest bin.
  */
-public class AlmostWorstFitPackingPolicy<T extends Comparable<T>>
-    implements PackingPolicy<T> {
+public class AlmostWorstFitPackingPolicy<
+    P extends Comparable<P>,
+    C extends Comparable<C>>
+    implements PackingPolicy<P, C> {
 
   /**
    * Chooses the second emptiest bin. Returns an {@link Optional }
@@ -29,15 +31,16 @@ public class AlmostWorstFitPackingPolicy<T extends Comparable<T>>
    * @return An {@link Optional } that represents the bin it found.
    */
   @SuppressWarnings("unchecked")
-  public Optional<Bin<T>> chooseBin(final T piece,
-                                    final List<Bin<T>> existingBins) {
+  public Optional<Bin<P, C>> chooseBin(final P piece,
+                                       final List<Bin<P, C>> existingBins) {
 
     if (existingBins.size() < 2) {
       return Optional.empty();
     }
 
-    final Bin<T> firstBin = existingBins.get(0);
-    final Bin<T>[] min2 = (Bin<T>[]) Array.newInstance(firstBin.getClass(), 2);
+    final Bin<P, C> firstBin = existingBins.get(0);
+    final Bin<P, C>[] min2 =
+        (Bin<P, C>[]) Array.newInstance(firstBin.getClass(), 2);
 
     existingBins.stream()
                 .filter(binsThatCanFit(piece))
@@ -53,14 +56,17 @@ public class AlmostWorstFitPackingPolicy<T extends Comparable<T>>
    * @param min2 ongoing result container for two bins
    * @param bin  a potential emptier bin than either in {@code min2}
    */
-  private void updateMin2(final Bin<T>[] min2, final Bin<T> bin) {
+  private void updateMin2(final Bin<P, C>[] min2, final Bin<P, C> bin) {
 
-    if (min2[0] == null || bin.compareTo(min2[0]) > 0) {
-      min2[1] = min2[0];
-      min2[0] = bin;
-    } else if (min2[1] == null || bin.compareTo(min2[1]) > 0) {
-      min2[1] = bin;
+    synchronized (min2) {
+      if (min2[0] == null || bin.compareTo(min2[0]) > 0) {
+        min2[1] = min2[0];
+        min2[0] = bin;
+      } else if (min2[1] == null || bin.compareTo(min2[1]) > 0) {
+        min2[1] = bin;
+      }
     }
   }
+
 
 }

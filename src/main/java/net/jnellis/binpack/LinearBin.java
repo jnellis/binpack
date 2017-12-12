@@ -16,9 +16,10 @@ import java.util.*;
  *
  * @author Joe Nellis
  */
-public class LinearBin implements Bin<Double> {
+public class LinearBin implements Bin<Double, Double> {
 
   private final List<Double> pieces = new ArrayList<>();
+
   private final List<Double> capacities;
 
   private final Double maxCapacity;
@@ -27,6 +28,7 @@ public class LinearBin implements Bin<Double> {
    * Flag indicating whether this bin was an existing bin.
    */
   private final boolean existing;
+
   private Double total = 0.0;
 
   /**
@@ -35,10 +37,13 @@ public class LinearBin implements Bin<Double> {
    * @param capacities The list of capacities that this bin could have.
    */
   public LinearBin(final List<Double> capacities) {
-    assert capacities.size() > 0;
-    this.capacities = new ArrayList<>(capacities);
+
+    this.capacities = new ArrayList<>(Objects.requireNonNull(capacities));
+    if (this.capacities.isEmpty()) {
+      throw CapacitySupport.mustBeAtLeastOneCapacityException();
+    }
     this.existing = false;
-    this.maxCapacity = Collections.max(capacities);
+    this.maxCapacity = Collections.max(this.capacities);
   }
 
   /**
@@ -48,6 +53,7 @@ public class LinearBin implements Bin<Double> {
    * @param capacity The single capacity of this bin.
    */
   public LinearBin(final Double capacity) {
+
     this.capacities = new ArrayList<>();
     this.capacities.add(capacity);
     this.existing = true;
@@ -62,6 +68,7 @@ public class LinearBin implements Bin<Double> {
    */
   @Override
   public synchronized boolean add(final Double piece) {
+
     if (piece < 0.0) {
       throw new AssertionError("Negative value pieces not allowed: " + piece);
     }
@@ -70,18 +77,6 @@ public class LinearBin implements Bin<Double> {
       return true;
     }
     return false;
-  }
-
-  /**
-   * Computes the remaining capacity of this bin based on the maximum
-   * of its potential capacities.
-   *
-   * @return The maximum potential remaining capacity.
-   */
-  @Override
-  public Double getMaxRemainingCapacity() {
-
-    return this.maxCapacity - getTotal();
   }
 
   /**
@@ -94,8 +89,43 @@ public class LinearBin implements Bin<Double> {
   @Override
   public boolean canFit(final Double piece) {
 
-    final Double newTotal = getTotal() + piece;
-    return capacities.stream().anyMatch(capacity -> capacity >= newTotal);
+    return capacities.stream().anyMatch(capacity -> capacity >= total + piece);
+  }
+
+  @Override
+  public final boolean isExisting() {
+
+    return existing;
+  }
+
+  @Override
+  public final List<Double> getPieces() {
+
+    return Collections.unmodifiableList(pieces);
+  }
+
+  @Override
+  public final Double getTotal() {
+
+    return total;
+  }
+
+  @Override
+  public final List<Double> getCapacities() {
+
+    return Collections.unmodifiableList(capacities);
+  }
+
+  /**
+   * Computes the remaining capacity of this bin based on the maximum
+   * of its potential capacities.
+   *
+   * @return The maximum potential remaining capacity.
+   */
+  @Override
+  public Double getMaxRemainingCapacity() {
+
+    return this.maxCapacity - total;
   }
 
   /**
@@ -106,36 +136,21 @@ public class LinearBin implements Bin<Double> {
    */
   public Double getSmallestCapacityNeeded() {
 
-    final Optional<Double> min = getCapacities()
+    final Optional<Double> min = this.capacities
         .stream()
-        .filter(capacity -> capacity >= getTotal())
-        .min(Comparator.comparing(capacity -> capacity - getTotal()));
-    return min.orElseThrow(Bin::mustBeAtLeastOneCapacityException);
+        .filter(capacity -> capacity >= total)
+        .min(Comparator.comparing(capacity -> capacity - total));
+    return min.orElseThrow(CapacitySupport::mustBeAtLeastOneCapacityException);
   }
 
-  @Override
-  public final boolean isExisting() {
-    return existing;
-  }
+  public boolean isMoreThanHalfMaxCapacity(final Double piece) {
 
-  @Override
-  public final Double getTotal() {
-    return total;
+    return maxCapacity / 2 < piece;
   }
-
-  @Override
-  public final List<Double> getCapacities() {
-    return Collections.unmodifiableList(capacities);
-  }
-
-  @Override
-  public final List<Double> getPieces() {
-    return Collections.unmodifiableList(pieces);
-  }
-
 
   @Override
   public String toString() {
+
     return "LinearBin{" + "pieces=" + pieces + ", capacities=" + capacities +
         ", total=" + total + ", existing=" + existing + '}';
   }
