@@ -32,18 +32,19 @@ class BestFitPackingCollectorTest extends Specification {
 
   def "Create best fit collector from convenience method"() {
     setup:
-    final def availableCapacities = [8d, 4d, 3d]
-    Supplier<LinearBin> binSupplier = new Supplier<LinearBin>() {
-      @Override
-      LinearBin get() {
-        return new LinearBin(availableCapacities);
-      }
-    }
+    final def capacities = [8d, 4d, 3d]
 
-    def collector = BinPackCollector.bestFitPacking(binSupplier, Function.identity())
+    def collector = BinPackCollector.bestFitPacking(LinearBin.newBinSupplier(capacities),
+        Function.identity())
 //    def binPacker = new LinearBinPacker().setPackingPolicy(policy)
     def pieces = [8d, 7.89d, 6d, 5d, 3d, 2d, 0.11d]
     def expectedResult = [[8d], [7.89d, 0.11d], [6d, 2d], [5d, 3d]]
+
+    expect:
+    pieces.stream().collect(collector).collect {
+      it.getPieces()
+    }.sort() == expectedResult.sort()
+
   }
 
   @Unroll

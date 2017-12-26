@@ -10,7 +10,6 @@ package net.jnellis.binpack;
 import net.jnellis.binpack.collectors.BestFitPackingCollector;
 import net.jnellis.binpack.packing.*;
 import net.jnellis.binpack.preorder.AsIsPolicy;
-import net.jnellis.binpack.preorder.DescendingPolicy;
 import org.openjdk.jmh.annotations.Benchmark;
 
 import java.util.ArrayList;
@@ -46,19 +45,6 @@ public class BinpackBenchmark extends PackState {
 
     List<Bin<Double, Double>> bins = new LinearBinPacker()
         .setPreOrderPolicy(new AsIsPolicy<>())
-        .packAll(
-            pieces,
-            new ArrayList<>(),
-            capacities);
-
-    return bins;
-  }
-
-  @Benchmark
-  public List<Bin<Double, Double>> testBestFitDecreasing() {
-
-    List<Bin<Double, Double>> bins = new LinearBinPacker()
-        .setPreOrderPolicy(new DescendingPolicy<>())
         .packAll(
             pieces,
             new ArrayList<>(),

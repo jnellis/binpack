@@ -9,6 +9,7 @@ package net.jnellis.binpack;
 
 
 import java.util.*;
+import java.util.function.Supplier;
 
 
 /**
@@ -60,6 +61,12 @@ public class LinearBin implements Bin<Double, Double> {
     this.maxCapacity = capacity;
   }
 
+  public static Supplier<LinearBin>
+  newBinSupplier(final List<Double> capacities) {
+
+    return () -> new LinearBin(capacities);
+  }
+
   /**
    * Automatically calls {@link #canFit} before placing the piece in the bin.
    *
@@ -67,7 +74,7 @@ public class LinearBin implements Bin<Double, Double> {
    * @return true if the piece was added.
    */
   @Override
-  public synchronized boolean add(final Double piece) {
+  public boolean add(final Double piece) {
 
     if (piece < 0.0) {
       throw new AssertionError("Negative value pieces not allowed: " + piece);

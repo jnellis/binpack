@@ -243,13 +243,13 @@ abstract public class BinPacker<
 
   /**
    * Add a new bin to the list of existing bins. New bin should be able to take
-   * on available capacities. Implementions must not add piece to new bin.
-   * Implementations should throw AssertionError is piece won't fit in a new bin
+   * on available capacities. Implementations must not add piece to new bin.
+   * Implementations should throw AssertionError if piece won't fit in a new bin
    * of any capacity specified.
    *
-   * @param piece
-   * @param existingBins
-   * @param availableCapacities
+   * @param piece    The piece that wants to be added.
+   * @param existingBins   New bins will be added to this list.
+   * @param availableCapacities  Capacities for new bins.
    * @return the newly created bin.
    */
   abstract Bin<P, C> addNewBin(P piece,

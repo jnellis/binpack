@@ -31,15 +31,15 @@ def reportFile = project.file("${project.projectDir}/reports/jmh/report.json")
 
 //https://github.com/melix/jmh-gradle-plugin
 jmh {
-  include = [".*Fit.*"]
+  include = [".*BestFit.*"]
   iterations = 10
   warmupIterations = 10
   jmhVersion = '1.19'
-  benchmarkMode = ['ss']
+  benchmarkMode = ['avgt']
   resultFormat = 'JSON'
   resultsFile = reportFile
   profilers=[]
-  fork = 4
+  fork = 2
   timeUnit ='us'
 }
 

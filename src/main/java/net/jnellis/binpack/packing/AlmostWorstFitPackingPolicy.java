@@ -58,13 +58,11 @@ public class AlmostWorstFitPackingPolicy<
    */
   private void updateMin2(final Bin<P, C>[] min2, final Bin<P, C> bin) {
 
-    synchronized (min2) {
-      if (min2[0] == null || bin.compareTo(min2[0]) > 0) {
-        min2[1] = min2[0];
-        min2[0] = bin;
-      } else if (min2[1] == null || bin.compareTo(min2[1]) > 0) {
-        min2[1] = bin;
-      }
+    if (min2[0] == null || bin.compareTo(min2[0]) > 0) {
+      min2[1] = min2[0];
+      min2[0] = bin;
+    } else if (min2[1] == null || bin.compareTo(min2[1]) > 0) {
+      min2[1] = bin;
     }
   }
 

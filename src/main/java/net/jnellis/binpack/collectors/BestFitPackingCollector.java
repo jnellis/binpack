@@ -9,10 +9,7 @@ package net.jnellis.binpack.collectors;
 
 import net.jnellis.binpack.Bin;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.NavigableMap;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -21,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * A collector that chooses a bin for each piece in the stream based on the
- * best fit algorithm, choosing the bin with the least capacity that will still
+ * best fit algorithm, choosing the fullest bin that will still
  * fit the given piece. The collector takes a 'bin' supplier for creating new
  * bins when there is no bin that will fit into the current bins.  Internally,
  * capacities of each bin are indexed by remaining capacity, which facilitates
@@ -60,49 +57,64 @@ public class BestFitPackingCollector<
   /**
    * Treemap implementation where keys are 'remaining capacity' of each bin.
    *
-   * @param binTree
-   * @param piece
+   * @param binTree   The treemap, keys are remaining capacity, values are
+   *                  a queue of bins with that remaining capacity.
+   * @param piece     The piece to pack
    */
   private void binpackTree2(
       final NavigableMap<CAPACITY, LinkedList<BINTYPE>> binTree,
       final PIECE piece) {
 
+    final CAPACITY key = pieceAsCapacity(piece);
+
     // Retrieve the key of the bins that have the smallest remaining capacity
     // at least enough to fit the piece.
-    final CAPACITY key = binTree.ceilingKey(pieceAsCapacity(piece));
+    final Map.Entry<CAPACITY, LinkedList<BINTYPE>> entry =
+        binTree.ceilingEntry(key);
 
-    if (key == null) {
-      // create a new bin and a list to store other bins that have this key.
-      final BINTYPE bin = newBin().get();
-      bin.add(piece);
-      final LinkedList<BINTYPE> bList = new LinkedList<>();
-      bList.add(bin);
-      // store this new bin list.
-      synchronized (binTree) {
-        binTree.put(bin.getMaxRemainingCapacity(), bList);
-      }
+    if (entry == null) {
+      addNewEntry(binTree, piece);
     } else {
-      synchronized (binTree) {
-        // get the list of bins with key space remaining.
-        final LinkedList<BINTYPE> bList = binTree.get(key);
-        assert bList != null && !bList.isEmpty();
-
-        // the first bin in the list will do
-        final BINTYPE bin = bList.poll();
-        assert bin != null;
-        if (bList.isEmpty()) {
-          //remove entry if this was the last one;
-          binTree.remove(key);
-        }
-        assert bin.canFit(piece);
-        // add piece to bin then reinsert to list based on new key
-        bin.add(piece);
-        final CAPACITY newKey = bin.getMaxRemainingCapacity();
-        binTree.computeIfAbsent(newKey, capacity -> new LinkedList<>())
-               .add(bin);
-      }
+      addToExistingList(binTree, entry, piece);
     }
+  }
 
+  private void addNewEntry(final NavigableMap<CAPACITY, LinkedList<BINTYPE>>
+                               binTree,
+                           final PIECE piece) {
+
+    // create a new bin and a list to store other bins that have this key.
+    final BINTYPE bin = newBin().get();
+    bin.add(piece);
+    final LinkedList<BINTYPE> bList = new LinkedList<>();
+    bList.add(bin);
+    // store this new bin list.
+    binTree.put(bin.getMaxRemainingCapacity(), bList);
+
+  }
+
+  private void addToExistingList(
+      final NavigableMap<CAPACITY, LinkedList<BINTYPE>> binTree,
+      final Map.Entry<CAPACITY, LinkedList<BINTYPE>> entry,
+      final PIECE piece) {
+
+    // get the list of bins with key space remaining.
+    final LinkedList<BINTYPE> bList = entry.getValue();
+    assert bList != null && !bList.isEmpty();
+
+    // the first bin in the list will do
+    final BINTYPE bin = bList.poll();
+    assert bin != null;
+    if (bList.isEmpty()) {
+      //remove empty lists immediately
+      binTree.remove(entry.getKey());
+    }
+    assert bin.canFit(piece);
+    // add piece to bin then reinsert to tree based on new key
+    bin.add(piece);
+    final CAPACITY newKey = bin.getMaxRemainingCapacity();
+    binTree.computeIfAbsent(newKey, donotcare -> new LinkedList<>())
+           .add(bin);
   }
 
   @Override

@@ -20,7 +20,6 @@ import java.util.stream.Collector;
 
 /**
  * A Collector interface for packing pieces into bins.
- * <p>
  * <pre>{@code
  * List<Double> boardLengths = loadLengths();
  * List<Double> stockLengths = Collections.asList(8d, 12d, 16d);  //in feet
@@ -41,13 +40,43 @@ public interface BinPackCollector<
     A>
     extends Collector<PIECE, A, Collection<BINTYPE>> {
 
-  //*** <insert prayers to type safety gods> ***
+  /**
+   * Packs pieces by choosing the fullest bin that still
+   * has remaining capacity enough to fit the next piece.
+   * When multiple bins qualify with the same remaining
+   * capacity, the bin that has stayed the longest at that
+   * capacity is chosen.
+   * <p>
+   * This is a convenience factory method for avoiding variable
+   * declarations of a verbose nature as this collector has
+   * three type parameters that are implicitly defined
+   * by the type signature of the method parameters.
+   * </p>
+   * <pre>{@code
+   * List<Double> pieces =
+   *     getIncomingPieces().stream()
+   *                        .collect( bestFitPacking(
+   *                            () -> new LinearBin (stockLengths),
+   *                            Function.identity()));
+   *
+   * }</pre>
+   *
+   * @param newBinSupplier          Supplies new bins when needed.
+   * @param pieceAsCapacityFunction Piece to Capacity conversion function
+   * @param <PIECE>                 The type of piece you are trying to fit
+   *                                into bins
+   * @param <CAPACITY>              The type of capacity that represents
+   *                                aggregate pieces.
+   * @param <BINTYPE>               The type of bin that has CAPACITY and
+   *                                takes PIECES.
+   * @return the created collector
+   */
   static <PIECE extends Comparable<PIECE>,
       CAPACITY extends Comparable<CAPACITY>,
       BINTYPE extends Bin<PIECE, CAPACITY> &
           Comparable<Bin<PIECE, CAPACITY>> &
           CapacitySupport<CAPACITY>>
-  BinPackCollector<PIECE, CAPACITY, BINTYPE, ?> bestFitPacking(
+  Collector<PIECE, ?, Collection<BINTYPE>> bestFitPacking(
       final Supplier<BINTYPE> newBinSupplier,
       final Function<PIECE, CAPACITY> pieceAsCapacityFunction
   ) {
