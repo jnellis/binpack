@@ -28,6 +28,7 @@ public class FirstFitPackingPolicy<
    * @param existingBins List of existing bins where the piece could fit.
    * @return Returns an Optional bin that represents the bin it found, or not.
    */
+  @Override
   public Optional<Bin<P, C>> chooseBin(final P piece,
                                        final List<Bin<P, C>> existingBins) {
     return existingBins.stream()

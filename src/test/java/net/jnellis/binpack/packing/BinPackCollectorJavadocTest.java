@@ -13,6 +13,7 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.toList;
 import static net.jnellis.binpack.LinearBin.newBinSupplier;
 import static net.jnellis.binpack.collectors.BinPackCollector.bestFitPacking;
+import static org.junit.Assert.assertTrue;
 
 /**
  * User: Joe Nellis
@@ -49,9 +50,9 @@ public class BinPackCollectorJavadocTest {
                         newBinSupplier(stockLengths),
                         Function.identity()));
 
-    assert bins.size() == 56;
+    assertTrue(bins.size() == 56);
     if (resultBins != null) {
-      assert bins.equals(resultBins);
+      assertTrue(bins.equals(resultBins));
     }
   }
 
@@ -64,9 +65,9 @@ public class BinPackCollectorJavadocTest {
                     .collect(bestFitPacking(
                         () -> new LinearBin(stockLengths),
                         Function.identity()));
-    assert bins.size() == 56;
+    assertTrue(bins.size() == 56);
     if (resultBins != null) {
-      assert bins.equals(resultBins);
+      assertTrue(bins.equals(resultBins));
     }
   }
 }

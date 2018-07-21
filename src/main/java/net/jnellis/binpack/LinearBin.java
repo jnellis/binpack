@@ -141,6 +141,7 @@ public class LinearBin implements Bin<Double, Double> {
    * @return The minimal capacity of this bins capacities that is still
    * bigger than the total packed.
    */
+  @Override
   public Double getSmallestCapacityNeeded() {
 
     final Optional<Double> min = this.capacities

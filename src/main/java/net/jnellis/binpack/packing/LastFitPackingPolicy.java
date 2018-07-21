@@ -31,6 +31,7 @@ public class LastFitPackingPolicy<
    * @param existingBins List of existing bins where the piece could fit.
    * @return an Optional Bin that represents the bin it found, or not.
    */
+  @Override
   public Optional<Bin<P, C>> chooseBin(final P piece,
                                        final List<Bin<P, C>> existingBins) {
 

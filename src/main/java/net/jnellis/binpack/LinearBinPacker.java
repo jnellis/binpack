@@ -25,6 +25,7 @@ public class LinearBinPacker extends BinPacker<Double, Double> {
    * @param availableCapacities List of capacities that the new bin could be.
    * @return the new LinearBin.
    */
+  @Override
   Bin<Double, Double> addNewBin(final Double piece,
                                 final List<Bin<Double, Double>> bins,
                                 final List<Double> availableCapacities) {

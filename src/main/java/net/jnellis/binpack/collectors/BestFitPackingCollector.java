@@ -31,7 +31,7 @@ public class BestFitPackingCollector<
     CAPACITY extends Comparable<CAPACITY>,
     BINTYPE extends Bin<PIECE, CAPACITY>>
     implements BinPackCollector<PIECE, CAPACITY, BINTYPE,
-    NavigableMap<CAPACITY, LinkedList<BINTYPE>>> {
+    NavigableMap<CAPACITY, ArrayDeque<BINTYPE>>> {
 
 
   private final Supplier<BINTYPE> newBinSupplier;
@@ -62,14 +62,14 @@ public class BestFitPackingCollector<
    * @param piece     The piece to pack
    */
   private void binpackTree2(
-      final NavigableMap<CAPACITY, LinkedList<BINTYPE>> binTree,
+      final NavigableMap<CAPACITY, ArrayDeque<BINTYPE>> binTree,
       final PIECE piece) {
 
     final CAPACITY key = pieceAsCapacity(piece);
 
     // Retrieve the key of the bins that have the smallest remaining capacity
     // at least enough to fit the piece.
-    final Map.Entry<CAPACITY, LinkedList<BINTYPE>> entry =
+    final Map.Entry<CAPACITY, ArrayDeque<BINTYPE>> entry =
         binTree.ceilingEntry(key);
 
     if (entry == null) {
@@ -79,14 +79,14 @@ public class BestFitPackingCollector<
     }
   }
 
-  private void addNewEntry(final NavigableMap<CAPACITY, LinkedList<BINTYPE>>
+  private void addNewEntry(final NavigableMap<CAPACITY, ArrayDeque<BINTYPE>>
                                binTree,
                            final PIECE piece) {
 
     // create a new bin and a list to store other bins that have this key.
     final BINTYPE bin = newBin().get();
     bin.add(piece);
-    final LinkedList<BINTYPE> bList = new LinkedList<>();
+    final ArrayDeque<BINTYPE> bList = new ArrayDeque<>();
     bList.add(bin);
     // store this new bin list.
     binTree.put(bin.getMaxRemainingCapacity(), bList);
@@ -94,12 +94,12 @@ public class BestFitPackingCollector<
   }
 
   private void addToExistingList(
-      final NavigableMap<CAPACITY, LinkedList<BINTYPE>> binTree,
-      final Map.Entry<CAPACITY, LinkedList<BINTYPE>> entry,
+      final NavigableMap<CAPACITY, ArrayDeque<BINTYPE>> binTree,
+      final Map.Entry<CAPACITY, ArrayDeque<BINTYPE>> entry,
       final PIECE piece) {
 
     // get the list of bins with key space remaining.
-    final LinkedList<BINTYPE> bList = entry.getValue();
+    final ArrayDeque<BINTYPE> bList = entry.getValue();
     assert bList != null && !bList.isEmpty();
 
     // the first bin in the list will do
@@ -113,7 +113,7 @@ public class BestFitPackingCollector<
     // add piece to bin then reinsert to tree based on new key
     bin.add(piece);
     final CAPACITY newKey = bin.getMaxRemainingCapacity();
-    binTree.computeIfAbsent(newKey, donotcare -> new LinkedList<>())
+    binTree.computeIfAbsent(newKey, donotcare -> new ArrayDeque<>())
            .add(bin);
   }
 
@@ -130,20 +130,20 @@ public class BestFitPackingCollector<
   }
 
   @Override
-  public Supplier<NavigableMap<CAPACITY, LinkedList<BINTYPE>>> supplier() {
+  public Supplier<NavigableMap<CAPACITY, ArrayDeque<BINTYPE>>> supplier() {
 
     return TreeMap::new;
   }
 
   @Override
-  public BiConsumer<NavigableMap<CAPACITY, LinkedList<BINTYPE>>, PIECE>
+  public BiConsumer<NavigableMap<CAPACITY, ArrayDeque<BINTYPE>>, PIECE>
   accumulator() {
 
     return this::binpackTree2;
   }
 
   @Override
-  public BinaryOperator<NavigableMap<CAPACITY, LinkedList<BINTYPE>>>
+  public BinaryOperator<NavigableMap<CAPACITY, ArrayDeque<BINTYPE>>>
   combiner() {
 
     return (bins, bins2) -> {
@@ -153,11 +153,11 @@ public class BestFitPackingCollector<
   }
 
   @Override
-  public Function<NavigableMap<CAPACITY, LinkedList<BINTYPE>>,
+  public Function<NavigableMap<CAPACITY, ArrayDeque<BINTYPE>>,
       Collection<BINTYPE>> finisher() {
 
     return (binTree) -> binTree.values().stream()
-                               .flatMap(LinkedList::stream)
+                               .flatMap(ArrayDeque::stream)
                                .collect(Collectors.toList());
   }
 }

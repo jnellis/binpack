@@ -31,6 +31,7 @@ public class AlmostWorstFitPackingPolicy<
    * @return An {@link Optional } that represents the bin it found.
    */
   @SuppressWarnings("unchecked")
+  @Override
   public Optional<Bin<P, C>> chooseBin(final P piece,
                                        final List<Bin<P, C>> existingBins) {
 

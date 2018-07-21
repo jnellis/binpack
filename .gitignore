@@ -67,3 +67,4 @@ web/
 
 
 /reports/jmh/
+/src/net/jnellis/binpack/annotations.xml

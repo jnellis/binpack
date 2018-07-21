@@ -9,7 +9,8 @@
 plugins {
   id "com.jfrog.bintray" version "1.0"
   id "me.champeau.gradle.jmh" version "0.4.3"
-  id "io.morethan.jmhreport" version "0.6.2.1"
+  id "io.morethan.jmhreport" version "0.6.2.1" 
+  id "net.ltgt.errorprone" version "0.0.14"
 }
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -17,9 +18,9 @@ apply plugin: 'groovy'
 //apply from: 'bintray.gradle'
 
 compileJava.options.compilerArgs = ["-Xlint:unchecked"]
-version "1.2"
+version = "1.2"
 
-repositories {
+repositories {                       
   mavenCentral()
 }
 
@@ -31,7 +32,7 @@ def reportFile = project.file("${project.projectDir}/reports/jmh/report.json")
 
 //https://github.com/melix/jmh-gradle-plugin
 jmh {
-  include = [".*BestFit.*"]
+  include = [".*BestFitC.*"]
   iterations = 10
   warmupIterations = 10
   jmhVersion = '1.19'

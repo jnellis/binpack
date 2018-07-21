@@ -33,6 +33,7 @@ public class NextFitPackingPolicy<
    * @param existingBins List of existing bins where the piece could fit.
    * @return The Optional bin if it fits or an empty optional.
    */
+  @Override
   public Optional<Bin<P, C>> chooseBin(final P piece,
                                        final List<Bin<P, C>> existingBins) {
 

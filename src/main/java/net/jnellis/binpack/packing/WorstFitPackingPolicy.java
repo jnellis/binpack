@@ -29,6 +29,7 @@ public class WorstFitPackingPolicy<
    * @param existingBins List of existing bins where the piece could fit.
    * @return an {@link Optional} that represents the bin it chose, or not.
    */
+  @Override
   public Optional<Bin<P, C>> chooseBin(final P piece,
                                        final List<Bin<P, C>> existingBins) {
 
