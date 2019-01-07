@@ -12,7 +12,7 @@ import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 import static net.jnellis.binpack.LinearBin.newBinSupplier;
-import static net.jnellis.binpack.collectors.BinPackCollector.bestFitPacking;
+import static net.jnellis.binpack.collectors.BestFitPackingCollector.bestFitPacking;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -58,7 +58,6 @@ public class BinPackCollectorJavadocTest {
 
   @Test
   public void testJavadocCode() {
-
 
     Collection<LinearBin> bins =
         boardLengths.stream()

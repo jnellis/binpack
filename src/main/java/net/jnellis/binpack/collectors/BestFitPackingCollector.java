@@ -8,12 +8,14 @@
 package net.jnellis.binpack.collectors;
 
 import net.jnellis.binpack.Bin;
+import net.jnellis.binpack.CapacitySupport;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +55,51 @@ public class BestFitPackingCollector<
     this.pieceAsCapacity = pieceAsCapacity;
   }
 
+  /**
+   * Packs pieces by choosing the fullest bin that still
+   * has remaining capacity enough to fit the next piece.
+   * When multiple bins qualify with the same remaining
+   * capacity, the bin that has stayed the longest at that
+   * capacity is chosen.
+   * <p>
+   * This is a convenience factory method for avoiding variable
+   * declarations of a verbose nature as this collector has
+   * three type parameters that are implicitly defined
+   * by the type signature of the method parameters.
+   * </p>
+   * <pre>{@code
+   * List<Double> pieces =
+   *     getIncomingPieces().stream()
+   *                        .collect( bestFitPacking(
+   *                            () -> new LinearBin (stockLengths),
+   *                            Function.identity()));
+   *
+   * }</pre>
+   *
+   * @param newBinSupplier          Supplies new bins when needed.
+   * @param pieceAsCapacityFunction Piece to Capacity conversion function
+   * @param <PIECE>                 The type of piece you are trying to fit
+   *                                into bins
+   * @param <CAPACITY>              The type of capacity that represents
+   *                                aggregate pieces.
+   * @param <BINTYPE>               The type of bin that has CAPACITY and
+   *                                takes PIECES.
+   * @return the created collector
+   */
+  public static  <PIECE extends Comparable<PIECE>,
+      CAPACITY extends Comparable<CAPACITY>,
+      BINTYPE extends Bin<PIECE, CAPACITY> &
+          Comparable<Bin<PIECE, CAPACITY>> &
+          CapacitySupport<CAPACITY>>
+  Collector<PIECE, ?, Collection<BINTYPE>> bestFitPacking(
+      final Supplier<BINTYPE> newBinSupplier,
+      final Function<PIECE, CAPACITY> pieceAsCapacityFunction
+  ) {
+
+    return new BestFitPackingCollector<>(
+        newBinSupplier,
+        pieceAsCapacityFunction);
+  }
 
   /**
    * Treemap implementation where keys are 'remaining capacity' of each bin.

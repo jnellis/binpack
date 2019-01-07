@@ -20,6 +20,8 @@ import java.util.function.Supplier
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
+import static net.jnellis.binpack.collectors.BestFitPackingCollector.bestFitPacking
+
 /**
  * User: Joe Nellis
  * Date: 8/7/2017 
@@ -34,7 +36,7 @@ class BestFitPackingCollectorTest extends Specification {
     setup:
     final def capacities = [8d, 4d, 3d]
 
-    def collector = BinPackCollector.bestFitPacking(LinearBin.newBinSupplier(capacities),
+    def collector = bestFitPacking(LinearBin.newBinSupplier(capacities),
         Function.identity())
 //    def binPacker = new LinearBinPacker().setPackingPolicy(policy)
     def pieces = [8d, 7.89d, 6d, 5d, 3d, 2d, 0.11d]
