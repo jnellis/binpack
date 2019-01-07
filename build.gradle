@@ -10,7 +10,6 @@ plugins {
   id "com.jfrog.bintray" version "1.0"
   id "me.champeau.gradle.jmh" version "0.4.3"
   id "io.morethan.jmhreport" version "0.6.2.1" 
-  id "net.ltgt.errorprone" version "0.0.14"
 }
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -26,6 +25,7 @@ repositories {
 
 dependencies {
   testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+  testCompile "junit:junit:4.12"
 }
 
 def reportFile = project.file("${project.projectDir}/reports/jmh/report.json")
