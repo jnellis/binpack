@@ -13,7 +13,6 @@ import net.jnellis.binpack.CapacitySupport;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
@@ -62,23 +61,6 @@ public interface BinPackCollector<
   default Set<Characteristics> characteristics() {
 
     return Collections.emptySet();
-  }
-
-  /**
-   * Creates a predicate for bins that can fit this particular piece.
-   * <p>
-   * Usage:
-   * <pre>
-   *   collection.stream()
-   *             .filter(binsThatCanFit(piece);
-   * </pre>
-   *
-   * @param piece The piece that will be packed next.
-   * @return Predicate for checking if a bin fits the given piece.
-   */
-  default Predicate<BINTYPE> binsThatCanFit(final PIECE piece) {
-
-    return bin -> bin.canFit(piece);
   }
 
 }

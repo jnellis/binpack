@@ -11,15 +11,15 @@ package net.jnellis.binpack;
 import java.util.List;
 
 /**
- * A packing bin used by {@link BinPacker}. A bin has a capacity, can contain
+ * A packing bin used by {@link BinPacker}. A bin has a <b>capacity</b>, can
+ * contain
  * pieces, has a means to determine if a piece can fit in the bin and finally
  * if the bin was 'existing.' An existing bin means it was not created during
  * the packing operation but exists as a given bin with the intention that it
  * represents results from a previous or partial packing operation.
  */
-public interface Bin<PIECE extends Comparable<PIECE>,
-    CAPACITY extends Comparable<CAPACITY>>
-    extends Comparable<Bin<PIECE, CAPACITY>>, CapacitySupport<CAPACITY> {
+public interface Bin<P extends Comparable<P>, C extends Comparable<C>>
+    extends Comparable<Bin<P, C>>, CapacitySupport<C> {
 
 
   /**
@@ -29,10 +29,10 @@ public interface Bin<PIECE extends Comparable<PIECE>,
    * @param piece The piece to add.
    * @return true if the piece was added, false if it would not fit.
    */
-  boolean add(PIECE piece);
+  boolean add(P piece);
 
   @Override
-  default int compareTo(final Bin<PIECE, CAPACITY> o) {
+  default int compareTo(final Bin<P, C> o) {
 
     return getMaxRemainingCapacity().compareTo(o.getMaxRemainingCapacity());
   }
@@ -44,7 +44,7 @@ public interface Bin<PIECE extends Comparable<PIECE>,
    * @param piece The piece to fit.
    * @return true if the piece will fit.
    */
-  boolean canFit(PIECE piece);
+  boolean canFit(P piece);
 
   /**
    * Returns whether this bin is an existing bin and not created on the fly
@@ -60,7 +60,7 @@ public interface Bin<PIECE extends Comparable<PIECE>,
    *
    * @return a list of current pieces in this bin.
    */
-  List<PIECE> getPieces();
+  List<P> getPieces();
 
 
 }
