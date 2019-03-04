@@ -28,6 +28,12 @@ dependencies {
   testCompile "junit:junit:4.12"
 }
 
+javadoc{
+  source = sourceSets.main.allJava
+  options.overview = "${project.projectDir}/src/main/java/net/jnellis/binpack/overview.html"
+  options.noQualifiers("java.lang")
+}
+
 def reportFile = project.file("${project.projectDir}/reports/jmh/report.json")
 
 //https://github.com/melix/jmh-gradle-plugin
