@@ -9,9 +9,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static net.jnellis.binpack.LinearBin.newBinSupplier;
 import static net.jnellis.binpack.collectors.BestFitPackingCollector.bestFitPacking;
 import static org.junit.Assert.assertTrue;
 
@@ -44,11 +44,11 @@ public class BinPackCollectorJavadocTest {
   @Test
   public void testConvenienceMethod() {
 
+    Supplier<LinearBin> newBinSupplier = LinearBin.newBinSupplier(stockLengths);
+    Function<Double,Double> pieceAsCapacity = Function.identity();
+
     Collection<LinearBin> bins =
-        boardLengths.stream()
-                    .collect(bestFitPacking(
-                        newBinSupplier(stockLengths),
-                        Function.identity()));
+        boardLengths.stream().collect(bestFitPacking(newBinSupplier, pieceAsCapacity));
 
     assertTrue(bins.size() == 56);
     if (resultBins != null) {

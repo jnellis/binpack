@@ -22,21 +22,21 @@ import java.util.stream.Collector;
  * List<Double> boardLengths = loadLengths();
  * List<Double> stockLengths = Collections.asList(8d, 12d, 16d);  //in feet
  *
+ * Supplier<LinearBin> newBinSupplier = LinearBin.newBinSupplier(stockLengths);
+ * Function<Double,Double> pieceAsCapacity = Function.identity();
+ *
  * Collection<LinearBin> bins =
  *     boardLengths.stream()
- *                 .collect(bestFitPacking( () -> new LinearBin(stockLengths),
- *                                          Function.identity()));
+ *                 .collect(bestFitPacking( newBinSupplier, pieceAsCapacity ));
  *
  * }</pre>
  */
 public interface BinPackCollector<
-    PIECE extends Comparable<PIECE>,
-    CAPACITY extends Comparable<CAPACITY>,
-    BINTYPE extends Bin<PIECE, CAPACITY> &
-        Comparable<Bin<PIECE, CAPACITY>> &
-        CapacitySupport<CAPACITY>,
+    P extends Comparable<P>,
+    C extends Comparable<C>,
+    B extends Bin<P, C> & Comparable<Bin<P, C>> & CapacitySupport<C>,
     A>
-    extends Collector<PIECE, A, Collection<BINTYPE>> {
+    extends Collector<P, A, Collection<B>> {
 
 
 
@@ -46,17 +46,21 @@ public interface BinPackCollector<
    *
    * @return a function that supplies a new {@link Bin}.
    */
-  Supplier<BINTYPE> newBin();
+  Supplier<B> newBin();
 
   /**
    * Converts a piece type to a capacity type for the purpose of comparing
    * a piece to a remaining capacity of a partially filled bin.
    *
-   * @param piece piece type
-   * @return This pieces representation as a capacity.
+   * @param piece piece
+   * @return This piece's representation as a capacity.
    */
-  CAPACITY pieceAsCapacity(PIECE piece);
+  C pieceAsCapacity(P piece);
 
+  /**
+   *
+   * @return   default emptySet of characteristics.
+   */
   @Override
   default Set<Characteristics> characteristics() {
 

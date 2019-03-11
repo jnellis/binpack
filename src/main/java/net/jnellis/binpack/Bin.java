@@ -12,25 +12,31 @@ import java.util.List;
 
 /**
  * A packing bin used by {@link BinPacker}. A bin has a <b>capacity</b>, can
- * contain
- * pieces, has a means to determine if a piece can fit in the bin and finally
- * if the bin was 'existing.' An existing bin means it was not created during
- * the packing operation but exists as a given bin with the intention that it
- * represents results from a previous or partial packing operation.
+ * contain pieces, has a means to determine if a piece can fit in the bin and
+ * finally if the bin was 'existing.' An existing bin means it was not created
+ * during the packing operation but exists as a given bin with the intention
+ * that it represents results from a previous or partial packing operation.
  */
-public interface Bin<P extends Comparable<P>, C extends Comparable<C>>
+public interface Bin<
+    P extends Comparable<P>,
+    C extends Comparable<C>>
     extends Comparable<Bin<P, C>>, CapacitySupport<C> {
 
 
   /**
-   * Add a piece to this bin. The piece should be checked by calling
-   * {@code canFit()} first.
+   * Add a piece to this bin. The piece should be checked by calling {@link
+   * #canFit } first.
    *
    * @param piece The piece to add.
-   * @return true if the piece was added, false if it would not fit.
+   * @return true if the piece was added.
    */
   boolean add(P piece);
 
+  /**
+   * Compare two bins based on their maximum remaining capacity. 
+   *
+   * @see #getMaxRemainingCapacity
+   */
   @Override
   default int compareTo(final Bin<P, C> o) {
 
@@ -48,7 +54,7 @@ public interface Bin<P extends Comparable<P>, C extends Comparable<C>>
 
   /**
    * Returns whether this bin is an existing bin and not created on the fly
-   * during the previous packing operation.
+   * during a previous packing operation.
    *
    * @return true if this is an existing bin.
    */
@@ -58,7 +64,7 @@ public interface Bin<P extends Comparable<P>, C extends Comparable<C>>
   /**
    * The pieces contained in the bin.
    *
-   * @return a list of current pieces in this bin.
+   * @return an unmodifiable list of current pieces in this bin.
    */
   List<P> getPieces();
 

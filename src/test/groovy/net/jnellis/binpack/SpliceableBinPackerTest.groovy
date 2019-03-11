@@ -7,9 +7,11 @@
  */
 
 package net.jnellis.binpack
-import net.jnellis.binpack.packing.BestFitPackingPolicy
+
+
+import net.jnellis.binpack.packing.BestFit
 import net.jnellis.binpack.packing.PackingPolicy
-import net.jnellis.binpack.preorder.DescendingPolicy
+import net.jnellis.binpack.preorder.Descending
 import net.jnellis.binpack.preorder.PreOrderPolicy
 import spock.lang.Shared
 import spock.lang.Specification
@@ -17,15 +19,16 @@ import spock.lang.Unroll
 
 class SpliceableBinPackerTest extends Specification {
   @Shared
-  PackingPolicy<Double, Double> packingPolicy = new BestFitPackingPolicy<>()
+  PackingPolicy<Double, Double, LinearBin> packingPolicy =
+      new BestFit<>()
   @Shared
-  PreOrderPolicy<Double> preOrderPolicy = new DescendingPolicy<>()
+  PreOrderPolicy<Double> preOrderPolicy = new Descending<>()
 
   def "SetPackingPolicy returns same BinPacker"() {
     setup:
     SpliceableBinPacker binPacker = new SpliceableBinPacker();
     expect:
-    assert binPacker.setPackingPolicy(new BestFitPackingPolicy()).is(binPacker);
+    assert binPacker.setPackingPolicy(new BestFit()).is(binPacker);
   }
 
   def "Break up pieces that are bigger than maximum available capacity"() {

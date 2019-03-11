@@ -12,19 +12,19 @@ import java.util.List;
 /**
  * Allows the concept of a capacity or to enable aggregate operations of the set
  * of pieces in a bin.  We can order unknown 'piece' types that are comparable
- * to each other but not account (add,count) for them in whichever way defines
- * a 'filled' bin. If and however a bin can do these
- * things this interface intends to bridge this abstraction.
+ * to each other but not account (add,count) for them in whichever way defines a
+ * 'filled' bin. If and however a bin can do these things this interface intends
+ * to bridge this abstraction.
  */
 public interface CapacitySupport<C extends Comparable<C>> {
 
   /**
-   * Convenience exception Supplier for dealing with the case where a bin
-   * has no capacities to base calculations on.
-   * This method ideally should never be called.
+   * Convenience exception Supplier for dealing with the case where a bin has no
+   * capacities to base calculations on. This method ideally should never be
+   * called.
    *
-   * @return An IllegalStateException informing that there must be at least
-   * one capacity value from {@link #getCapacities()}
+   * @return An IllegalStateException informing that there must be at least one
+   * capacity value from {@link #getCapacities()}
    */
   static IllegalStateException mustBeAtLeastOneCapacityException() {
 
@@ -41,13 +41,13 @@ public interface CapacitySupport<C extends Comparable<C>> {
   /**
    * A list of potential capacities that this bin could have.
    *
-   * @return a list of current capacities that this bin could have.
+   * @return a list of capacities.
    */
   List<C> getCapacities();
 
   /**
-   * Computes the remaining capacity of this bin based on the maximum
-   * of its potential capacities.
+   * Computes the remaining capacity of this bin based on the maximum of its
+   * potential capacities.
    *
    * @return The maximum potential remaining capacity.
    */
@@ -56,8 +56,8 @@ public interface CapacitySupport<C extends Comparable<C>> {
   /**
    * Finds the minimal capacity needed given the current total.
    *
-   * @return The minimal capacity of this bins capacities that is still
-   * bigger than the total packed.
+   * @return The minimal capacity of this bins capacities that is still bigger
+   * than the total packed.
    */
   C getSmallestCapacityNeeded();
 

@@ -23,7 +23,8 @@ import java.util.stream.Stream;
 @FunctionalInterface
 public interface PackingPolicy<
     P extends Comparable<P>,
-    C extends Comparable<C>> {
+    C extends Comparable<C>,
+    B extends Bin<P,C>> {
 
   /**
    * Creates a stream that traverses the given list in reverse order. The
@@ -48,8 +49,8 @@ public interface PackingPolicy<
    * @param existingBins List of existing bins where the piece could fit.
    * @return Returns an Optional bin that represents the bin it found, or not.
    */
-  Optional<Bin<P, C>>
-  chooseBin(P piece, List<Bin<P, C>> existingBins);
+  Optional<B>
+  chooseBin(P piece, List<B> existingBins);
 
   /**
    * Creates a predicate for bins that can fit this particular piece.
@@ -63,7 +64,7 @@ public interface PackingPolicy<
    * @param piece The piece that will be packed next.
    * @return Predicate for checking if a bin fits the given piece.
    */
-  default Predicate<Bin<P, C>> binsThatCanFit(final P piece) {
+  default Predicate<B> binsThatCanFit(final P piece) {
 
     return bin -> bin.canFit(piece);
   }

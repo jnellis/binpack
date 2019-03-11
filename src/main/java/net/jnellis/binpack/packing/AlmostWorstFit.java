@@ -1,5 +1,5 @@
 /*
- * AlmostWorstFitPackingPolicy.java
+ * AlmostWorstFit.java
  *
  * Copyright (c) 2015. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -17,10 +17,11 @@ import java.util.Optional;
 /**
  * Chooses the second emptiest bin.
  */
-public class AlmostWorstFitPackingPolicy<
+public class AlmostWorstFit<
     P extends Comparable<P>,
-    C extends Comparable<C>>
-    implements PackingPolicy<P, C> {
+    C extends Comparable<C>,
+    B extends Bin<P, C>>
+    implements PackingPolicy<P, C, B> {
 
   /**
    * Chooses the second emptiest bin. Returns an {@link Optional }
@@ -32,16 +33,14 @@ public class AlmostWorstFitPackingPolicy<
    */
   @SuppressWarnings("unchecked")
   @Override
-  public Optional<Bin<P, C>> chooseBin(final P piece,
-                                       final List<Bin<P, C>> existingBins) {
+  public Optional<B> chooseBin(final P piece, final List<B> existingBins) {
 
     if (existingBins.size() < 2) {
       return Optional.empty();
     }
 
-    final Bin<P, C> firstBin = existingBins.get(0);
-    final Bin<P, C>[] min2 =
-        (Bin<P, C>[]) Array.newInstance(firstBin.getClass(), 2);
+    final B firstBin = existingBins.get(0);
+    final B[] min2 =(B[]) Array.newInstance(firstBin.getClass(), 2);
 
     existingBins.stream()
                 .filter(binsThatCanFit(piece))
@@ -57,7 +56,7 @@ public class AlmostWorstFitPackingPolicy<
    * @param min2 ongoing result container for two bins
    * @param bin  a potential emptier bin than either in {@code min2}
    */
-  private void updateMin2(final Bin<P, C>[] min2, final Bin<P, C> bin) {
+  private void updateMin2(final B[] min2, final B bin) {
 
     if (min2[0] == null || bin.compareTo(min2[0]) > 0) {
       min2[1] = min2[0];

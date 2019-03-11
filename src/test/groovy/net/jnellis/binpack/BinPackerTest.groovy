@@ -8,8 +8,8 @@
 
 package net.jnellis.binpack
 
-import net.jnellis.binpack.packing.BestFitPackingPolicy
-import net.jnellis.binpack.preorder.DescendingPolicy
+import net.jnellis.binpack.packing.BestFit
+import net.jnellis.binpack.preorder.Descending
 import spock.lang.Specification
 /**
  * User: Joe Nellis
@@ -65,12 +65,12 @@ class BinPackerTest extends Specification {
 
   def "test BinPacker javadoc example code"() {
     List<Double> pieces = Arrays.asList(3d, 4d, 8d, 5d, 7d) //piece lengths
-    List<Bin<Double>> bins = new ArrayList<>()
+    List<LinearBin> bins = new ArrayList<>()
     List<Double> capacities = Arrays.asList(6d)// bins are only 6.0 long
-    BinPacker<Double> binPacker = new SpliceableBinPacker()
-    bins = binPacker.setPreOrderPolicy(new DescendingPolicy<>())
-                    .setPackingPolicy(new BestFitPackingPolicy<>())
-                    .setAvailableCapacitiesPreOrderPolicy(new DescendingPolicy<>())
+    LinearBinPacker binPacker = new SpliceableBinPacker()
+    bins = binPacker.setPreOrderPolicy(new Descending<>())
+                    .setPackingPolicy(new BestFit<>())
+                    .setAvailableCapacitiesPreOrderPolicy(new Descending<>())
                     .packAll(pieces, bins, capacities)
 
     expect:

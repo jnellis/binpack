@@ -16,14 +16,22 @@ To use in your build:
 
 [ ![Download](https://api.bintray.com/packages/jnellis/maven/binpack/images/download.svg) ](https://bintray.com/jnellis/maven/binpack/_latestVersion)
 
+maven:
 
-or in gradle
+    <dependency>
+      <groupId>net.jnellis</groupId>
+      <artifactId>binpack</artifactId>
+      <version>1.2</version>
+      <type>pom</type>
+    </dependency>
+
+gradle:
 
     repositories {
-      maven { url 'https://dl.bintray.com/jnellis/maven'} 
+      jcenter() 
     }
     dependencies {
-      compile 'net.jnellis:binpack:1.1'
+      compile 'net.jnellis:binpack:1.2'
     }
     
     

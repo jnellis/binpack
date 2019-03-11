@@ -26,11 +26,9 @@ public class SpliceableBinPacker extends LinearBinPacker {
 
 
   @Override
-  public List<Bin<Double, Double>> packAll(final List<Double> pieces,
-                                           final List<Bin<Double, Double>>
-                                               existingBins,
-                                           final List<Double>
-                                               availableCapacities) {
+  public List<LinearBin> packAll(final List<Double> pieces,
+                                 final List<LinearBin> existingBins,
+                                 final List<Double> availableCapacities) {
 
     return super.packAll(
         createSplicePieces(pieces, Collections.max(availableCapacities)),
@@ -46,7 +44,7 @@ public class SpliceableBinPacker extends LinearBinPacker {
    *
    * @param pieces      list of pieces to pack
    * @param maxCapacity list of available maxCapacity.
-   * @return Returns the new <i>pieces</i> stream.
+   * @return Returns the new list of <i>pieces</i>.
    */
   public static List<Double> createSplicePieces(final Iterable<Double> pieces,
                                                 final Double maxCapacity) {

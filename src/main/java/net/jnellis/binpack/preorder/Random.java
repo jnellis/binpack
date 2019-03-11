@@ -1,5 +1,5 @@
 /*
- * AsIsPolicy.java
+ * Random.java
  *
  * Copyright (c) 2014. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -8,14 +8,19 @@
 
 package net.jnellis.binpack.preorder;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
- * A no-op ordering that leaves pieces as is.
+ * In place random ordering of pieces.
  */
-public class AsIsPolicy<T extends Comparable<T>> implements PreOrderPolicy<T> {
+public class Random<T extends Comparable<? super T>>
+    implements PreOrderPolicy<T> {
+
   @Override
   public List<T> order(final List<T> pieces) {
+
+    Collections.shuffle(pieces);
     return pieces;
   }
 }

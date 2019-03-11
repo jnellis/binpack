@@ -31,12 +31,12 @@ import java.util.stream.Collectors;
 public class BestFitPackingCollector<
     P extends Comparable<P>,
     C extends Comparable<C>,
-    BINTYPE extends Bin<P, C>>
-    implements BinPackCollector<P, C, BINTYPE,
-    NavigableMap<C, ArrayDeque<BINTYPE>>> {
+    B extends Bin<P, C>>
+    implements BinPackCollector<P, C, B,
+    NavigableMap<C, ArrayDeque<B>>> {
 
 
-  private final Supplier<BINTYPE> newBinSupplier;
+  private final Supplier<B> newBinSupplier;
 
   private final Function<P, C> pieceAsCapacity;
 
@@ -48,7 +48,7 @@ public class BestFitPackingCollector<
    * @param pieceAsCapacity Method to convert a piece type to a capacity type.
    */
   public BestFitPackingCollector(
-      final Supplier<BINTYPE> newBinSupplier,
+      final Supplier<B> newBinSupplier,
       final Function<P, C> pieceAsCapacity) {
 
     this.newBinSupplier = newBinSupplier;
@@ -78,22 +78,22 @@ public class BestFitPackingCollector<
    *
    * @param newBinSupplier          Supplies new bins when needed.
    * @param pieceAsCapacityFunction Piece to Capacity conversion function
-   * @param <PIECE>                 The type of piece you are trying to fit
+   * @param <P>                     The type of piece you are trying to fit
    *                                into bins
-   * @param <CAPACITY>              The type of capacity that represents
+   * @param <C>                     The type of capacity that represents
    *                                aggregate pieces.
-   * @param <BINTYPE>               The type of bin that has C and
+   * @param <B>                     The type of bin that has C and
    *                                takes PIECES.
    * @return the created collector
    */
-  public static <PIECE extends Comparable<PIECE>,
-      CAPACITY extends Comparable<CAPACITY>,
-      BINTYPE extends Bin<PIECE, CAPACITY> &
-          Comparable<Bin<PIECE, CAPACITY>> &
-          CapacitySupport<CAPACITY>>
-  Collector<PIECE, ?, Collection<BINTYPE>> bestFitPacking(
-      final Supplier<BINTYPE> newBinSupplier,
-      final Function<PIECE, CAPACITY> pieceAsCapacityFunction
+  public static <P extends Comparable<P>,
+      C extends Comparable<C>,
+      B extends Bin<P, C> &
+          Comparable<Bin<P, C>> &
+          CapacitySupport<C>>
+  Collector<P, ?, Collection<B>> bestFitPacking(
+      final Supplier<B> newBinSupplier,
+      final Function<P, C> pieceAsCapacityFunction
   ) {
 
     return new BestFitPackingCollector<>(
@@ -102,13 +102,13 @@ public class BestFitPackingCollector<
   }
 
   @Override
-  public Supplier<NavigableMap<C, ArrayDeque<BINTYPE>>> supplier() {
+  public Supplier<NavigableMap<C, ArrayDeque<B>>> supplier() {
 
     return TreeMap::new;
   }
 
   @Override
-  public BiConsumer<NavigableMap<C, ArrayDeque<BINTYPE>>, P> accumulator() {
+  public BiConsumer<NavigableMap<C, ArrayDeque<B>>, P> accumulator() {
 
     return this::binpackTree2;
   }
@@ -121,14 +121,14 @@ public class BestFitPackingCollector<
    * @param piece   The piece to pack
    */
   private void binpackTree2(
-      final NavigableMap<C, ArrayDeque<BINTYPE>> binTree,
+      final NavigableMap<C, ArrayDeque<B>> binTree,
       final P piece) {
 
     final C key = pieceAsCapacity(piece);
 
     // Retrieve the key of the bins that have the smallest remaining capacity
     // at least enough to fit the piece.
-    final Map.Entry<C, ArrayDeque<BINTYPE>> entry =
+    final Map.Entry<C, ArrayDeque<B>> entry =
         binTree.ceilingEntry(key);
 
     if (entry == null) {
@@ -138,13 +138,13 @@ public class BestFitPackingCollector<
     }
   }
 
-  private void addNewEntry(final NavigableMap<C, ArrayDeque<BINTYPE>> binTree,
+  private void addNewEntry(final NavigableMap<C, ArrayDeque<B>> binTree,
                            final P piece) {
 
     // create a new bin and a list to store other bins that have this key.
-    final BINTYPE bin = newBin().get();
+    final B bin = newBin().get();
     bin.add(piece);
-    final ArrayDeque<BINTYPE> bList = new ArrayDeque<>();
+    final ArrayDeque<B> bList = new ArrayDeque<>();
     bList.add(bin);
     // store this new bin list.
     binTree.put(bin.getMaxRemainingCapacity(), bList);
@@ -152,16 +152,16 @@ public class BestFitPackingCollector<
   }
 
   private void addToExistingList(
-      final NavigableMap<C, ArrayDeque<BINTYPE>> binTree,
-      final Map.Entry<C, ArrayDeque<BINTYPE>> entry,
+      final NavigableMap<C, ArrayDeque<B>> binTree,
+      final Map.Entry<C, ArrayDeque<B>> entry,
       final P piece) {
 
     // get the list of bins with key space remaining.
-    final ArrayDeque<BINTYPE> bList = entry.getValue();
+    final ArrayDeque<B> bList = entry.getValue();
     assert bList != null && !bList.isEmpty();
 
     // the first bin in the list will do
-    final BINTYPE bin = bList.poll();
+    final B bin = bList.poll();
     assert bin != null;
     if (bList.isEmpty()) {
       //remove empty lists immediately
@@ -176,7 +176,7 @@ public class BestFitPackingCollector<
   }
 
   @Override
-  public Supplier<BINTYPE> newBin() {
+  public Supplier<B> newBin() {
 
     return newBinSupplier;
   }
@@ -188,7 +188,7 @@ public class BestFitPackingCollector<
   }
 
   @Override
-  public BinaryOperator<NavigableMap<C, ArrayDeque<BINTYPE>>> combiner() {
+  public BinaryOperator<NavigableMap<C, ArrayDeque<B>>> combiner() {
 
     return (bins, bins2) -> {
       bins.putAll(bins2);
@@ -197,8 +197,7 @@ public class BestFitPackingCollector<
   }
 
   @Override
-  public Function<NavigableMap<C, ArrayDeque<BINTYPE>>,
-      Collection<BINTYPE>> finisher() {
+  public Function<NavigableMap<C, ArrayDeque<B>>, Collection<B>> finisher() {
 
     return (binTree) -> binTree.values().stream()
                                .flatMap(ArrayDeque::stream)

@@ -9,7 +9,7 @@ package net.jnellis.binpack;
 
 import net.jnellis.binpack.collectors.BestFitPackingCollector;
 import net.jnellis.binpack.packing.*;
-import net.jnellis.binpack.preorder.AsIsPolicy;
+import net.jnellis.binpack.preorder.AsIs;
 import org.openjdk.jmh.annotations.Benchmark;
 
 import java.util.ArrayList;
@@ -41,10 +41,10 @@ public class BinpackBenchmark extends PackState {
 
 
   @Benchmark
-  public List<Bin<Double, Double>> testBestFit() {
+  public List<LinearBin> testBestFit() {
 
-    List<Bin<Double, Double>> bins = new LinearBinPacker()
-        .setPreOrderPolicy(new AsIsPolicy<>())
+    List<LinearBin> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIs<>())
         .packAll(
             pieces,
             new ArrayList<>(),
@@ -54,11 +54,11 @@ public class BinpackBenchmark extends PackState {
   }
 
   @Benchmark
-  public List<Bin<Double, Double>> testNextFit() {
+  public List<LinearBin> testNextFit() {
 
-    List<Bin<Double, Double>> bins = new LinearBinPacker()
-        .setPreOrderPolicy(new AsIsPolicy<>())
-        .setPackingPolicy(new NextFitPackingPolicy<>())
+    List<LinearBin> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIs<>())
+        .setPackingPolicy(new NextFit<>())
         .packAll(
             pieces,
             new ArrayList<>(),
@@ -70,12 +70,12 @@ public class BinpackBenchmark extends PackState {
 
 
   @Benchmark
-  public List<Bin<Double, Double>> testAlmostWorstFit() {
+  public List<LinearBin> testAlmostWorstFit() {
 
-    List<Bin<Double, Double>> bins =
+    List<LinearBin> bins =
         new LinearBinPacker()
-            .setPreOrderPolicy(new AsIsPolicy<>())
-            .setPackingPolicy(new AlmostWorstFitPackingPolicy<>())
+            .setPreOrderPolicy(new AsIs<>())
+            .setPackingPolicy(new AlmostWorstFit<>())
             .packAll(
                 pieces,
                 new ArrayList<>(),
@@ -86,11 +86,11 @@ public class BinpackBenchmark extends PackState {
   }
 
   @Benchmark
-  public List<Bin<Double, Double>> testLastFit() {
+  public List<LinearBin> testLastFit() {
 
-    List<Bin<Double, Double>> bins = new LinearBinPacker()
-        .setPreOrderPolicy(new AsIsPolicy<>())
-        .setPackingPolicy(new LastFitPackingPolicy<>())
+    List<LinearBin> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIs<>())
+        .setPackingPolicy(new LastFit<>())
         .packAll(
             pieces,
             new ArrayList<>(),
@@ -100,11 +100,11 @@ public class BinpackBenchmark extends PackState {
   }
 
   @Benchmark
-  public List<Bin<Double, Double>> testFirstFit() {
+  public List<LinearBin> testFirstFit() {
 
-    List<Bin<Double, Double>> bins = new LinearBinPacker()
-        .setPreOrderPolicy(new AsIsPolicy<>())
-        .setPackingPolicy(new FirstFitPackingPolicy<>())
+    List<LinearBin> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIs<>())
+        .setPackingPolicy(new FirstFit<>())
         .packAll(
             pieces,
             new ArrayList<>(),
@@ -114,11 +114,11 @@ public class BinpackBenchmark extends PackState {
   }
 
   @Benchmark
-  public List<Bin<Double, Double>> testWorstFit() {
+  public List<LinearBin> testWorstFit() {
 
-    List<Bin<Double, Double>> bins = new LinearBinPacker()
-        .setPreOrderPolicy(new AsIsPolicy<>())
-        .setPackingPolicy(new WorstFitPackingPolicy<>())
+    List<LinearBin> bins = new LinearBinPacker()
+        .setPreOrderPolicy(new AsIs<>())
+        .setPackingPolicy(new WorstFit<>())
         .packAll(
             pieces,
             new ArrayList<>(),

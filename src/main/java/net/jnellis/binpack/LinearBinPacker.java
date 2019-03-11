@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * A bin packer for length types only.
  */
-public class LinearBinPacker extends BinPacker<Double, Double> {
+public class LinearBinPacker extends BinPacker<Double, Double, LinearBin> {
 
   /**
    * Creates a new {@code LinearBin} using {@code availableCapacities}
@@ -26,14 +26,15 @@ public class LinearBinPacker extends BinPacker<Double, Double> {
    * @return the new LinearBin.
    */
   @Override
-  Bin<Double, Double> addNewBin(final Double piece,
-                                final List<Bin<Double, Double>> bins,
-                                final List<Double> availableCapacities) {
+  protected LinearBin addNewBin(final Double piece,
+                      final List<LinearBin> bins,
+                      final List<Double> availableCapacities) {
 
-    final Bin<Double, Double> theBin = new LinearBin(availableCapacities);
-    if (!theBin.canFit(piece) || !bins.add(theBin)) {
+    final LinearBin theBin = new LinearBin(availableCapacities);
+    if (!theBin.canFit(piece)) {
       throw new AssertionError("Can't add bin to list of existingBins.");
     }
+    bins.add(theBin);
     return theBin;
   }
 

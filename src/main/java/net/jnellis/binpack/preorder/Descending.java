@@ -1,5 +1,5 @@
 /*
- * AscendingPolicy.java
+ * Descending.java
  *
  * Copyright (c) 2014. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -8,19 +8,20 @@
 
 package net.jnellis.binpack.preorder;
 
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-
 /**
- * In place sorting of pieces in their ascending or 'natural' ordering.
+ * In place sorting of pieces in their descending or reverse 'natural' ordering.
  */
-public class AscendingPolicy<T extends Comparable<T>> implements
-    PreOrderPolicy<T> {
+public class Descending<T extends Comparable<? super T>>
+    implements PreOrderPolicy<T> {
 
   @Override
   public List<T> order(final List<T> pieces) {
-    Collections.sort(pieces);
+
+    pieces.sort(Comparator.reverseOrder());
     return pieces;
   }
+
 }

@@ -9,8 +9,8 @@ package net.jnellis.binpack.collectors
 
 import net.jnellis.binpack.LinearBin
 import net.jnellis.binpack.LinearBinPacker
-import net.jnellis.binpack.packing.BestFitPackingPolicy
-import net.jnellis.binpack.preorder.AsIsPolicy
+import net.jnellis.binpack.packing.BestFit
+import net.jnellis.binpack.preorder.AsIs
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -102,8 +102,8 @@ class BestFitPackingCollectorTest extends Specification {
     def collectorList = new ArrayList<>(pieces.stream().collect(collector))
 
     def binpackerList = new LinearBinPacker()
-        .setPreOrderPolicy(new AsIsPolicy<>())
-        .setPackingPolicy(new BestFitPackingPolicy<>())
+        .setPreOrderPolicy(new AsIs<>())
+        .setPackingPolicy(new BestFit<>())
         .packAll(pieces, new ArrayList<>(), capacities)
 
     expect:

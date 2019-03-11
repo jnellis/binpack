@@ -23,17 +23,17 @@ public class LinearBin implements Bin<Double, Double> {
 
   private final List<Double> capacities;
 
-  private final Double maxCapacity;
+  private final double maxCapacity;
 
   /**
    * Flag indicating whether this bin was an existing bin.
    */
   private final boolean existing;
 
-  private Double total = 0.0;
+  private double total = 0.0;
 
   /**
-   * Create a new bin. It will not be marked as an existing bin.
+   * Create a new bin, it will not be marked as an existing bin.
    *
    * @param capacities The list of capacities that this bin could have.
    */
@@ -48,21 +48,27 @@ public class LinearBin implements Bin<Double, Double> {
   }
 
   /**
-   * Creates a bin that represents an existing bin. An existing bin has
-   * a single capacity.
+   * Creates a bin that represents an existing bin. An existing bin has a single
+   * capacity.
    *
    * @param capacity The single capacity of this bin.
    */
   public LinearBin(final Double capacity) {
 
-    this.capacities = new ArrayList<>();
-    this.capacities.add(capacity);
+    this.capacities = Collections.singletonList(capacity);
     this.existing = true;
     this.maxCapacity = capacity;
   }
 
-  public static Supplier<LinearBin>
-  newBinSupplier(final List<Double> capacities) {
+  /**
+   * Generates a Supplier that returns a new LinearBin when {@link Supplier#get}
+   * is called.
+   *
+   * @param capacities List of available capacities for the bins created by this
+   *                   lambda.
+   * @return Supplier of LinearBin.
+   */
+  public static Supplier<LinearBin> newBinSupplier(final List<Double> capacities) {
 
     return () -> new LinearBin(capacities);
   }
@@ -79,7 +85,8 @@ public class LinearBin implements Bin<Double, Double> {
     if (piece < 0.0) {
       throw new AssertionError("Negative value pieces not allowed: " + piece);
     }
-    if (this.canFit(piece) && pieces.add(piece)) {
+    if (this.canFit(piece)) {
+      pieces.add(piece);
       total += piece;
       return true;
     }
@@ -96,7 +103,8 @@ public class LinearBin implements Bin<Double, Double> {
   @Override
   public boolean canFit(final Double piece) {
 
-    return capacities.stream().anyMatch(capacity -> capacity >= total + piece);
+    return capacities.stream()
+                     .anyMatch(capacity -> capacity >= total + piece);
   }
 
   @Override
@@ -124,8 +132,8 @@ public class LinearBin implements Bin<Double, Double> {
   }
 
   /**
-   * Computes the remaining capacity of this bin based on the maximum
-   * of its potential capacities.
+   * Computes the remaining capacity of this bin based on the maximum of its
+   * potential capacities.
    *
    * @return The maximum potential remaining capacity.
    */
@@ -138,8 +146,8 @@ public class LinearBin implements Bin<Double, Double> {
   /**
    * Finds the minimal capacity needed given the current total.
    *
-   * @return The minimal capacity of this bins capacities that is still
-   * bigger than the total packed.
+   * @return The minimal capacity of this bins capacities that is still bigger
+   * than the total packed.
    */
   @Override
   public Double getSmallestCapacityNeeded() {
@@ -151,6 +159,11 @@ public class LinearBin implements Bin<Double, Double> {
     return min.orElseThrow(CapacitySupport::mustBeAtLeastOneCapacityException);
   }
 
+  /**
+   * Determines if this piece is larger than half the maximum capacity.
+   * @param piece a piece 
+   * @return true if piece is more than half max capacity.
+   */
   public boolean isMoreThanHalfMaxCapacity(final Double piece) {
 
     return maxCapacity / 2 < piece;
@@ -162,4 +175,6 @@ public class LinearBin implements Bin<Double, Double> {
     return "LinearBin{" + "pieces=" + pieces + ", capacities=" + capacities +
         ", total=" + total + ", existing=" + existing + '}';
   }
+
+
 }

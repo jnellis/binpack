@@ -1,5 +1,5 @@
 /*
- * LastFitPackingPolicy.java
+ * LastFit.java
  *
  * Copyright (c) 2014. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -15,13 +15,14 @@ import java.util.Optional;
 
 /**
  * Chooses the farthest bin first.
- * Differs from {@link NextFitPackingPolicy} in that it filters pieces that
+ * Differs from {@link NextFit} in that it filters pieces that
  * could fit and then picks the last of them or returns an empty Optional.
  */
-public class LastFitPackingPolicy<
+public class LastFit<
     P extends Comparable<P>,
-    C extends Comparable<C>>
-    implements PackingPolicy<P, C> {
+    C extends Comparable<C>,
+    B extends Bin<P, C>>
+    implements PackingPolicy<P, C, B> {
 
 
   /**
@@ -32,8 +33,7 @@ public class LastFitPackingPolicy<
    * @return an Optional Bin that represents the bin it found, or not.
    */
   @Override
-  public Optional<Bin<P, C>> chooseBin(final P piece,
-                                       final List<Bin<P, C>> existingBins) {
+  public Optional<B> chooseBin(final P piece, final List<B> existingBins) {
 
     return PackingPolicy.reverseStream(existingBins)
                         .filter(binsThatCanFit(piece))

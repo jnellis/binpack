@@ -14,7 +14,8 @@ import java.util.List;
  * An ordering policy for sorting pieces before being packed.
  */
 @FunctionalInterface
-public interface PreOrderPolicy<T extends Comparable<T>> {
+public interface PreOrderPolicy<T extends Comparable<? super T>> {
+
   /**
    * Orders pieces and returns the ordered list.
    *

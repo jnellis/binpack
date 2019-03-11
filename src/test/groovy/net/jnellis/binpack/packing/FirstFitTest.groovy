@@ -1,5 +1,5 @@
 /*
- * FirstFitPackingPolicyTest.groovy
+ * FirstFitTest.groovy
  *
  * Copyright (c) 2014. Joe Nellis
  * Distributed under MIT License. See accompanying file License.txt or at
@@ -20,7 +20,7 @@ import spock.lang.Unroll
  * Time: 12:56 PM
  *
  */
-class FirstFitPackingPolicyTest extends Specification {
+class FirstFitTest extends Specification {
 
   @Shared
   def bins = new ArrayList<Bin<Double>>();
@@ -28,7 +28,7 @@ class FirstFitPackingPolicyTest extends Specification {
   @Unroll
   def "Pack the first bin with space available."() {
     setup:
-    def policy = new FirstFitPackingPolicy()
+    def policy = new FirstFit()
     def binPacker = new LinearBinPacker().setPackingPolicy(policy)
     def availableCapacities = [8d, 4d, 3d].asList()
     expect:

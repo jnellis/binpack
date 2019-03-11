@@ -47,20 +47,21 @@ bintray{
   user = bintrayUser
   key =  bintrayKey 
   publications = ['mavenJava']
-  dryRun = true
+  dryRun = false
   publish = true
 
   pkg{
     repo = 'maven'
     name = 'binpack'
     desc = 'linear bin packing library'
+    userOrg = 'jnellis'
     websiteUrl = 'https://github.com/jnellis/binpack'
     issueTrackerUrl = 'https://github.com/jnellis/binpack/issues'
     vcsUrl = 'https://github.com/jnellis/binpack.git'
     licenses = ['MIT']
     version{
-      name = project.version
-      vcsTag = project.version
+//      name = project.version
+//      vcsTag = project.version
       desc = 'Linear bin packing library.'
     }
   }

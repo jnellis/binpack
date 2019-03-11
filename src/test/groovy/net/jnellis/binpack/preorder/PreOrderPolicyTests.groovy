@@ -26,17 +26,17 @@ class PreOrderPolicyTests extends Specification {
     assert preOrderPolicy.order(list) == expectedOrdering
 
     where:
-    preOrderPolicy           || expectedOrdering
-    new AscendingPolicy<>()  || [1, 2, 3, 4, 5, 6, 7, 8, 9]
-    new AsIsPolicy<>()       || [6, 3, 5, 1, 2, 4, 8, 9, 7]
-    new DescendingPolicy<>() || [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    preOrderPolicy     || expectedOrdering
+    new Ascending<>()  || [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    new AsIs<>()       || [6, 3, 5, 1, 2, 4, 8, 9, 7]
+    new Descending<>() || [9, 8, 7, 6, 5, 4, 3, 2, 1]
   }
 
   def "check list with RandomPolicy is not same after ordering."() {
     setup:
     def copyOfList = [] << list
     expect:
-    assert new RandomPolicy<>().order(list) != copyOfList
+    assert new Random<>().order(list) != copyOfList
 
   }
 
