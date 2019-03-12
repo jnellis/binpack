@@ -34,4 +34,6 @@ gradle:
       compile 'net.jnellis:binpack:1.3'
     }
     
+Browseable javadocs at http://jnellis.github.io/binpack/javadocs/
+
     
