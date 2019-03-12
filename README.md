@@ -21,7 +21,7 @@ maven:
     <dependency>
       <groupId>net.jnellis</groupId>
       <artifactId>binpack</artifactId>
-      <version>1.2</version>
+      <version>1.3</version>
       <type>pom</type>
     </dependency>
 
@@ -31,7 +31,7 @@ gradle:
       jcenter() 
     }
     dependencies {
-      compile 'net.jnellis:binpack:1.2'
+      compile 'net.jnellis:binpack:1.3'
     }
     
     
